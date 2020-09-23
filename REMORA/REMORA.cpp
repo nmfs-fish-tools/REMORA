@@ -1136,8 +1136,7 @@ REMORA::getScaleFactorPoints(const int& speciesNum)
 }
 
 double
-REMORA::getScaleValueFromPlot(int speciesNum,
-                                            int year)
+REMORA::getScaleValueFromPlot(int speciesNum, int year)
 {
     double scaleValue;
 
@@ -1147,7 +1146,7 @@ REMORA::getScaleValueFromPlot(int speciesNum,
         scaleValue = 1.0;
     }
     if (scaleValue < 0) {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::getScaleValueFromPlot: Error reading from Scale plot");
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::getScaleValueFromPlot: Error reading from Scale plot");
         return 0;
     }
     return scaleValue;
@@ -1374,7 +1373,7 @@ REMORA::saveForecastParameters()
             "  WHERE ForecastName = '" + m_ProjectSettingsConfig + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (errorMsg != " ") {
-        m_Logger->logMsg(nmfConstants::Error,"[Error 1] MSSPM_GuiManagerMode: DELETE error: " + errorMsg);
+        m_Logger->logMsg(nmfConstants::Error,"[Error 1] REMORA: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
     }
 
@@ -1453,7 +1452,7 @@ REMORA::saveHarvestData()
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 CompetitionForm,nmfConstantsMSSPM::DontShowPopupError);
     if (! systemFound) {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::saveHarvestData: No systems found");
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: No systems found");
         return;
     }
 
@@ -1466,7 +1465,7 @@ REMORA::saveHarvestData()
            m_ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (errorMsg != " ") {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::saveHarvestData: DELETE error: " + errorMsg);
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(m_Widget, "Error",
                              "\nError in Save command.  Couldn't delete all records from" +
@@ -1495,7 +1494,7 @@ REMORA::saveHarvestData()
     cmd = cmd.substr(0,cmd.size()-1);
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (errorMsg != " ") {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::saveHarvestData: Write table error: " + errorMsg);
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: Write table error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QApplication::restoreOverrideCursor();
         return;
@@ -1545,7 +1544,7 @@ REMORA::saveUncertaintyParameters()
     cmd = "DELETE FROM ForecastUncertainty WHERE ForecastName = '" + ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (errorMsg != " ") {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::callback_SavePB: DELETE error: " + errorMsg);
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::callback_SavePB: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(MModeWindowWidget, "Error",
                              "\nError in Save command.  Couldn't delete all records from ForecastUncertainty table.\n",
@@ -1569,13 +1568,13 @@ REMORA::saveUncertaintyParameters()
             cmd += "," + Harvest + "),";
 
             //Ask about the number of columns in the parameter count
-            //ERROR: MSSPM_GuiManagerMode::callback_SavePB: Write table error: Column count doesn't match value count at row 1 QMYSQL: Unable to execute query
+            //ERROR: REMORA::callback_SavePB: Write table error: Column count doesn't match value count at row 1 QMYSQL: Unable to execute query
     }
     cmd = cmd.substr(0,cmd.size()-1);
 
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (errorMsg != " ") {
-        m_Logger->logMsg(nmfConstants::Error,"MSSPM_GuiManagerMode::callback_SavePB: Write table error: " + errorMsg);
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::callback_SavePB: Write table error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(MModeWindowWidget, "Error",
                              "\nError in Save command.  Check that all cells are populated.\n",

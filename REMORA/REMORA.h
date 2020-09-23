@@ -1,8 +1,8 @@
 /**
- * @file MSSPM_GuiManagerMode.h
- * @brief GUI definition for the Control widgets class MSSPM_GuiManagerMode in the REMORA embedded tiik
+ * @file REMORA.h
+ * @brief GUI definition for the Control widgets class REMORA
  *
- * This file contains the GUI definitions for the controls and charts found in the MSSPM_GuiManagerMode
+ * This file contains the GUI definitions for the controls and charts found in the REMORA
  * class.  This class represents the MSSPM REMORA Management tool and allows managers to quickly and
  * intuitively create, view, and save forecast scenarios.
  *
