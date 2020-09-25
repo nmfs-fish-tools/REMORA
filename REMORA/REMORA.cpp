@@ -169,7 +169,7 @@ REMORA::drawMultiSpeciesChart()
     int EndYear;
     int NumSpecies;
     int NumObservedYears;
-    int LastCatchYear;
+    int LastCatchYear      = 0;
     int YMinSliderVal      = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
@@ -178,7 +178,7 @@ REMORA::drawMultiSpeciesChart()
     int Theme              = 0;
     double ScaleVal        = 1.0;
     double CatchValue;
-    double remTime0Value;
+    double remTime0Value   = 0;
     std::string ChartType = "Line";
     std::string LineStyle = "SolidLine";
     std::string msg;
@@ -252,7 +252,7 @@ REMORA::drawMultiSpeciesChart()
         for (int time=0; time<=NumYearsPerRun; ++time) {
             if (isFishingMortality) {
                 CatchValue = m_MovableLineCharts[species]->getYValue(time) * Catch(LastCatchYear,species);
-                if (ForecastBiomass[0](time,species) == 0) {
+                if (nmfUtils::isNearlyZero(ForecastBiomass[0](time,species))) {
                     ChartLine(time,species) = nmfConstantsMSSPM::NoFishingMortality;
 //                  msg = "Found MS Biomass = 0, setting F to 0 for Species: " +
 //                         SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
@@ -266,7 +266,7 @@ REMORA::drawMultiSpeciesChart()
                     if (time == 0) {
                         remTime0Value = ChartLine(0,species);
                     }
-                    if (remTime0Value == 0) {
+                    if (nmfUtils::isNearlyZero(remTime0Value)) {
                         msg = "Found first year Biomass = 0, setting relative Biomass to 0 for Species: " +
                                SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
                         m_Logger->logMsg(nmfConstants::Warning,msg);
@@ -589,12 +589,12 @@ REMORA::drawSingleSpeciesChart()
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
     int Theme = 0;
-    int LastCatchYear;
+    int LastCatchYear      = 0;
     int NumObservedYears;
     double ScaleVal         = 1.0;
     double brightnessFactor = 0.2;
     double CatchValue;
-    double remTime0Value;
+    double remTime0Value    = 0;
     std::string TableName = "Forecasts";
     std::string ChartType = "Line";
     std::string LineStyle = "SolidLine";
@@ -694,7 +694,7 @@ REMORA::drawSingleSpeciesChart()
             for (int time=0; time<=NumYearsPerRun; ++time) {
                 if (isFishingMortality) {
                     CatchValue = m_MovableLineCharts[species/*SpeciesNum*/]->getYValue(time) * Catch(LastCatchYear,species);
-                    if (ForecastBiomassMonteCarlo[line](time,species) == 0) {
+                    if (nmfUtils::isNearlyZero(ForecastBiomassMonteCarlo[line](time,species))) {
                         ChartLinesMonteCarlo(time,line) = nmfConstantsMSSPM::NoFishingMortality;
 //                       msg = "Found Monte Carlo Biomass = 0, setting F to 0 for Species: " +
 //                              SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
@@ -708,7 +708,7 @@ REMORA::drawSingleSpeciesChart()
                         remTime0Value = ChartLinesMonteCarlo(0,line);
                     }
                     if (isRelativeBiomass) {
-                        if (remTime0Value == 0) {
+                        if (nmfUtils::isNearlyZero(remTime0Value)) {
                             ChartLinesMonteCarlo(time,line) = 0;
                         } else {
                             ChartLinesMonteCarlo(time,line) /= remTime0Value;
@@ -729,7 +729,7 @@ REMORA::drawSingleSpeciesChart()
             for (int time=0; time<=NumYearsPerRun; ++time) {
                 if (isFishingMortality) {
                     CatchValue = m_MovableLineCharts[species]->getYValue(time) * Catch(LastCatchYear,species);
-                    if (ForecastBiomass[0](time,species) == 0) {
+                    if (nmfUtils::isNearlyZero(ForecastBiomass[0](time,species))) {
                         ChartLine(time,0) = nmfConstantsMSSPM::NoFishingMortality;
 //                      msg = "Found Biomass = 0, setting F to 0 for Species: " +
 //                             SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
@@ -743,7 +743,7 @@ REMORA::drawSingleSpeciesChart()
                         remTime0Value = ChartLine(0,0);
                     }
                     if (isRelativeBiomass) {
-                        if (remTime0Value == 0) {
+                        if (nmfUtils::isNearlyZero(remTime0Value)) {
                             ChartLine(time,0) = 0;
                         } else {
                             ChartLine(time,0) /= remTime0Value;
@@ -771,7 +771,7 @@ REMORA::drawSingleSpeciesChart()
 
         // Test if perfect square
         long double root = sqrt(NumSpecies);
-        bool perfectSquare = ((root-std::floor(root)) == 0);
+        bool perfectSquare = nmfUtils::isNearlyZero(root-std::floor(root));
         if (! perfectSquare) {
             root = std::floor(root+1);
         }
@@ -1167,8 +1167,8 @@ REMORA::getSpeciesNum()
 void
 REMORA::getYearRange(int& firstYear, int& lastYear)
 {
-    int StartYear;
-    int NumYears;
+    int StartYear = 0;
+    int NumYears  = 0;
     std::vector<std::string> fields;
     std::map<std::string, std::vector<std::string> > dataMap;
     std::string queryStr;
@@ -1180,9 +1180,9 @@ REMORA::getYearRange(int& firstYear, int& lastYear)
     if (dataMap["RunLength"].size() != 0) {
         StartYear = std::stoi(dataMap["StartYear"][0]);
         NumYears  = std::stoi(dataMap["RunLength"][0]);
+        firstYear = StartYear;
+        lastYear  = firstYear + NumYears;
     }
-    firstYear = StartYear;
-    lastYear  = firstYear + NumYears;
 }
 
 void
@@ -1341,7 +1341,7 @@ REMORA::resetControls()
 void
 REMORA::resetNumYearsOnScaleFactorCharts()
 {
-    for (int i=0; i<m_MovableLineCharts.size(); ++i) {
+    for (unsigned i=0; i<m_MovableLineCharts.size(); ++i) {
         m_MovableLineCharts[i]->setRange(m_NumYearsPerRun);
     }
 }
@@ -1478,7 +1478,7 @@ REMORA::saveHarvestData()
     getLastYearsCatchValues(NumYears,lastYearsCatchValues);
 
     cmd = "INSERT INTO " + m_HarvestType + " (ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,SpeName,Year,Value) VALUES ";
-    for (int speciesNum=0; speciesNum<SpeNames.size(); ++speciesNum) { // Species
+    for (unsigned speciesNum=0; speciesNum<SpeNames.size(); ++speciesNum) { // Species
 
         for (int yearNum=0; yearNum<=NumYearsInForecast; ++yearNum) { // Time
 
@@ -1557,7 +1557,7 @@ REMORA::saveUncertaintyParameters()
     cmd += "SpeName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
     cmd += "GrowthRate,CarryingCapacity,Predation,Competition,BetaSpecies,";
     cmd += "BetaGuilds,Handling,Exponent,Catchability,Harvest) VALUES ";
-    for (int i = 0; i < SpeNames.size(); ++i) { // Species
+    for (unsigned i = 0; i < SpeNames.size(); ++i) { // Species
             cmd += "('" + SpeNames[i] + "','" + ForecastName + "','" + Algorithm +
                     "','" + Minimizer + "','" + ObjectiveCriterion + "','" + Scaling + "'";
             cmd += "," + GrowthRate;
@@ -1595,7 +1595,7 @@ REMORA::setAScaleFactorPoint(QString arg1)
     // Rescale x axis of plot(s)
     getYearRange(startYear,endYear);
 
-    if ((xValue == endYear) || (xValue == endYear+m_NumYearsPerRun)) {
+    if ((int(xValue) == endYear) || (int(xValue) == endYear+m_NumYearsPerRun)) {
         m_MovableLineCharts[m_IndexScaleFactorChart2]->setPointYValue(m_IndexScaleFactorPoint,QPointF(xValue,yValue));
     } else {
         m_MovableLineCharts[m_IndexScaleFactorChart2]->addPoint(QPointF(xValue,yValue));
@@ -1718,7 +1718,7 @@ REMORA::setNumYearsPerRun(QString numYearsStr)
 
     MModeYearsPerRunSL->setValue(numYears);
     MModeYearsPerRunLE->setText(numYearsStr);
-    for (int i=0; i<m_MovableLineCharts.size(); ++i) {
+    for (unsigned i=0; i<m_MovableLineCharts.size(); ++i) {
         m_MovableLineCharts[i]->setRange(numYears);
     }
 }
@@ -2132,7 +2132,7 @@ REMORA::callback_SavePB()
 
     if (! filename.isEmpty()) {
         // Guarantee no spaces in filenames
-        filename.simplified();
+        filename = filename.simplified();
         filename.replace(" ","_");
 
         // Make sure file has a valid extension
