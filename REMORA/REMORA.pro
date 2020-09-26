@@ -27,11 +27,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    REMORA.cpp
+    REMORA_UI.cpp
 
 HEADERS += \
-    REMORA.h \
+    REMORA_UI.h \
     precompiled_header.h
+
+RESOURCES += \
+    resource2.qrc
+
 
 unix {
     target.path = /usr/lib

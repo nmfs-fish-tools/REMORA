@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['saveoutputbiomassdata',['SaveOutputBiomassData',['../class_r_e_m_o_r_a.html#a3cefd41fc226c15e416ff4ab0943cc30',1,'REMORA']]],
-  ['setforecastname',['setForecastName',['../class_r_e_m_o_r_a.html#a0b1c570e2747dc5e9f7845e0a1fe0723',1,'REMORA']]],
-  ['setforecastnumrunsperforecast',['setForecastNumRunsPerForecast',['../class_r_e_m_o_r_a.html#a40b697d627dd2281f5b1c25ab84f67df',1,'REMORA']]],
-  ['setforecastnumyearsperrun',['setForecastNumYearsPerRun',['../class_r_e_m_o_r_a.html#a8f7176d9cfe38d29070f11bf4d732a46',1,'REMORA']]],
-  ['setspecieslist',['setSpeciesList',['../class_r_e_m_o_r_a.html#a3c3547123015a24142f257f56132065d',1,'REMORA']]]
+  ['saveoutputbiomassdata',['SaveOutputBiomassData',['../class_r_e_m_o_r_a___u_i.html#a8f0ba648b37d13151e949781b0221033',1,'REMORA_UI']]],
+  ['setforecastname',['setForecastName',['../class_r_e_m_o_r_a___u_i.html#a707cea64c6a99a35464d070eacf05f35',1,'REMORA_UI']]],
+  ['setforecastnumrunsperforecast',['setForecastNumRunsPerForecast',['../class_r_e_m_o_r_a___u_i.html#a4a4a8221f09a28f44ca2e4a4dfa98bad',1,'REMORA_UI']]],
+  ['setforecastnumyearsperrun',['setForecastNumYearsPerRun',['../class_r_e_m_o_r_a___u_i.html#aec60e3dd914d2898778557d275302e5d',1,'REMORA_UI']]],
+  ['setspecieslist',['setSpeciesList',['../class_r_e_m_o_r_a___u_i.html#a2870bae4e6eaf7ee79aef2a315a455e0',1,'REMORA_UI']]]
 ];

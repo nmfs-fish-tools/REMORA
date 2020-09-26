@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['mousemoved',['MouseMoved',['../class_r_e_m_o_r_a.html#a525ff2f7c495f62ef146823dee6ac8b8',1,'REMORA']]],
-  ['mousereleased',['MouseReleased',['../class_r_e_m_o_r_a.html#a26771442e3a10d6ee4ce702cf7671542',1,'REMORA']]]
+  ['mousemoved',['MouseMoved',['../class_r_e_m_o_r_a___u_i.html#a9092accd92e9fb72dd8848b861ca7ab1',1,'REMORA_UI']]],
+  ['mousereleased',['MouseReleased',['../class_r_e_m_o_r_a___u_i.html#ac676a24728a9f2c2b8f812ddbc11065a',1,'REMORA_UI']]]
 ];

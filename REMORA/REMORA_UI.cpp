@@ -1,18 +1,19 @@
-#include "REMORA.h"
+#include "REMORA_UI.h"
 
-REMORA::REMORA(
+
+
+REMORA_UI::REMORA_UI(
+        QWidget*     parentW,
         nmfDatabase* databasePtr,
         nmfLogger*   logger,
         std::string& projectDir,
         std::string& projectSettingsConfig,
-        QStringList& SpeciesList,
-        QWidget*     MModeWidget)
+        QStringList& SpeciesList)
 {
     m_DatabasePtr            = databasePtr;
     m_Logger                 = logger;
     m_ProjectDir             = projectDir;
     m_ProjectSettingsConfig  = projectSettingsConfig;
-    m_Widget                 = MModeWidget;
     m_ScenarioChanged        = false;
     m_MaxYAxis               = -1.0;
     m_HarvestType            = "ForecastCatch";
@@ -22,45 +23,46 @@ REMORA::REMORA(
     m_IndexScaleFactorChart1 =  0;
     m_IndexScaleFactorChart2 = -1;
     m_IndexScaleFactorPoint  =  0;
+    m_TopLevelWidget         = loadUI(parentW);
 
-    MModeYearsPerRunSL       = MModeWidget->findChild<QSlider*     >("MModeYearsPerRunSL");
-    MModeRunsPerForecastSL   = MModeWidget->findChild<QSlider*     >("MModeRunsPerForecastSL");
-    MModeScenarioNameLE      = MModeWidget->findChild<QLineEdit*   >("MModeScenarioNameLE");
-    MModeYearsPerRunLE       = MModeWidget->findChild<QLineEdit*   >("MModeYearsPerRunLE");
-    MModeRunsPerForecastLE   = MModeWidget->findChild<QLineEdit*   >("MModeRunsPerForecastLE");
-    MModePctMSYLE            = MModeWidget->findChild<QLineEdit*   >("MModePctMSYLE");
-    MModeRParamLE            = MModeWidget->findChild<QLineEdit*   >("MModeRParamLE");
-    MModeKParamLE            = MModeWidget->findChild<QLineEdit*   >("MModeKParamLE");
-    MModeHParamLE            = MModeWidget->findChild<QLineEdit*   >("MModeHParamLE");
-    MModePctMSYDL            = MModeWidget->findChild<QDial*       >("MModePctMSYDL");
-    MModeRParamDL            = MModeWidget->findChild<QDial*       >("MModeRParamDL");
-    MModeKParamDL            = MModeWidget->findChild<QDial*       >("MModeKParamDL");
-    MModeHParamDL            = MModeWidget->findChild<QDial*       >("MModeHParamDL");
-    MModeSpeciesCMB          = MModeWidget->findChild<QComboBox*   >("MModeSpeciesCMB");
-    MModeSpeciesLB           = MModeWidget->findChild<QLabel*      >("MModeSpeciesLB");
-    MModeUpperPlotWidget     = MModeWidget->findChild<QWidget*     >("MModeUpperPlotWidget");
-    MModeHarvestChartWidget  = MModeWidget->findChild<QWidget*     >("MModeHarvestChartWidget");
-    MModeWindowWidget        = MModeWidget->findChild<QWidget*     >("MModeWindowWidget");
-    MModeParentChartW        = MModeWidget->findChild<QWidget*     >("MModeParentChartW");
-    MModeForecastRunPB       = MModeWidget->findChild<QPushButton* >("MModeForecastRunPB");
-    MModeForecastLoadPB      = MModeWidget->findChild<QPushButton* >("MModeForecastLoadPB");
-    MModeForecastSavePB      = MModeWidget->findChild<QPushButton* >("MModeForecastSavePB");
-    MModeForecastDelPB       = MModeWidget->findChild<QPushButton* >("MModeForecastDelPB");
-    MModeMultiPlotTypePB     = MModeWidget->findChild<QPushButton* >("MModeMultiPlotTypePB");
-    MModeMaxScaleFactorPB    = MModeWidget->findChild<QPushButton* >("MModeMaxScaleFactorPB");
-    MModeShowMSYCB           = MModeWidget->findChild<QCheckBox*   >("MModeShowMSYCB");
-    MModePctMSYCB            = MModeWidget->findChild<QCheckBox*   >("MModePctMSYCB");
-    MModeDeterministicRB     = MModeWidget->findChild<QRadioButton*>("MModeDeterministicRB");
-    MModeStochasticRB        = MModeWidget->findChild<QRadioButton*>("MModeStochasticRB");
-    MModePlotTypeSSRB        = MModeWidget->findChild<QRadioButton*>("MModePlotTypeSSRB");
-    MModePlotTypeMSRB        = MModeWidget->findChild<QRadioButton*>("MModePlotTypeMSRB");
-    MModeHarvestTypePB       = MModeWidget->findChild<QPushButton* >("MModeHarvestTypePB");
-    MModePctMSYLBL           = MModeWidget->findChild<QLabel*      >("MModePctMSYLBL");
-    MModeForecastPlotTypeCMB = MModeWidget->findChild<QComboBox*   >("MModeForecastPlotTypeCMB");
-    MModeForecastPlotTypeLB  = MModeWidget->findChild<QLabel*      >("MModeForecastPlotTypeLB");
-    MModeYAxisLockCB         = MModeWidget->findChild<QCheckBox*   >("MModeYAxisLockCB");
-    MModeForecastTypeLB      = MModeWidget->findChild<QLabel*      >("MModeForecastTypeLB");
-    MModePlotTypeLB          = MModeWidget->findChild<QLabel*      >("MModePlotTypeLB");
+    MModeYearsPerRunSL       = m_TopLevelWidget->findChild<QSlider*     >("MModeYearsPerRunSL");
+    MModeRunsPerForecastSL   = m_TopLevelWidget->findChild<QSlider*     >("MModeRunsPerForecastSL");
+    MModeScenarioNameLE      = m_TopLevelWidget->findChild<QLineEdit*   >("MModeScenarioNameLE");
+    MModeYearsPerRunLE       = m_TopLevelWidget->findChild<QLineEdit*   >("MModeYearsPerRunLE");
+    MModeRunsPerForecastLE   = m_TopLevelWidget->findChild<QLineEdit*   >("MModeRunsPerForecastLE");
+    MModePctMSYLE            = m_TopLevelWidget->findChild<QLineEdit*   >("MModePctMSYLE");
+    MModeRParamLE            = m_TopLevelWidget->findChild<QLineEdit*   >("MModeRParamLE");
+    MModeKParamLE            = m_TopLevelWidget->findChild<QLineEdit*   >("MModeKParamLE");
+    MModeHParamLE            = m_TopLevelWidget->findChild<QLineEdit*   >("MModeHParamLE");
+    MModePctMSYDL            = m_TopLevelWidget->findChild<QDial*       >("MModePctMSYDL");
+    MModeRParamDL            = m_TopLevelWidget->findChild<QDial*       >("MModeRParamDL");
+    MModeKParamDL            = m_TopLevelWidget->findChild<QDial*       >("MModeKParamDL");
+    MModeHParamDL            = m_TopLevelWidget->findChild<QDial*       >("MModeHParamDL");
+    MModeSpeciesCMB          = m_TopLevelWidget->findChild<QComboBox*   >("MModeSpeciesCMB");
+    MModeSpeciesLB           = m_TopLevelWidget->findChild<QLabel*      >("MModeSpeciesLB");
+    MModeUpperPlotWidget     = m_TopLevelWidget->findChild<QWidget*     >("MModeUpperPlotWidget");
+    MModeHarvestChartWidget  = m_TopLevelWidget->findChild<QWidget*     >("MModeHarvestChartWidget");
+    MModeWindowWidget        = m_TopLevelWidget->findChild<QWidget*     >("MModeWindowWidget");
+    MModeParentChartW        = m_TopLevelWidget->findChild<QWidget*     >("MModeParentChartW");
+    MModeForecastRunPB       = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastRunPB");
+    MModeForecastLoadPB      = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastLoadPB");
+    MModeForecastSavePB      = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastSavePB");
+    MModeForecastDelPB       = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastDelPB");
+    MModeMultiPlotTypePB     = m_TopLevelWidget->findChild<QPushButton* >("MModeMultiPlotTypePB");
+    MModeMaxScaleFactorPB    = m_TopLevelWidget->findChild<QPushButton* >("MModeMaxScaleFactorPB");
+    MModeShowMSYCB           = m_TopLevelWidget->findChild<QCheckBox*   >("MModeShowMSYCB");
+    MModePctMSYCB            = m_TopLevelWidget->findChild<QCheckBox*   >("MModePctMSYCB");
+    MModeDeterministicRB     = m_TopLevelWidget->findChild<QRadioButton*>("MModeDeterministicRB");
+    MModeStochasticRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModeStochasticRB");
+    MModePlotTypeSSRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModePlotTypeSSRB");
+    MModePlotTypeMSRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModePlotTypeMSRB");
+    MModeHarvestTypePB       = m_TopLevelWidget->findChild<QPushButton* >("MModeHarvestTypePB");
+    MModePctMSYLBL           = m_TopLevelWidget->findChild<QLabel*      >("MModePctMSYLBL");
+    MModeForecastPlotTypeCMB = m_TopLevelWidget->findChild<QComboBox*   >("MModeForecastPlotTypeCMB");
+    MModeForecastPlotTypeLB  = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastPlotTypeLB");
+    MModeYAxisLockCB         = m_TopLevelWidget->findChild<QCheckBox*   >("MModeYAxisLockCB");
+    MModeForecastTypeLB      = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastTypeLB");
+    MModePlotTypeLB          = m_TopLevelWidget->findChild<QLabel*      >("MModePlotTypeLB");
 
     MModeDeterministicRB->setChecked(false);
     MModeStochasticRB->setChecked(true);
@@ -125,21 +127,21 @@ REMORA::REMORA(
     QDir().mkdir(m_RemoraScenarioDir); // Makes the directory if it doesn't already exist
 
     // Setup function map for setters
-    m_FunctionMap["Forecast"]             = &REMORA::setScenarioName;
-    m_FunctionMap["NumYearsPerRun"]       = &REMORA::setNumYearsPerRun;
-    m_FunctionMap["NumRunsPerForecast"]   = &REMORA::setNumRunsPerForecast;
-    m_FunctionMap["isDeterministic"]      = &REMORA::setDeterministic;
-    m_FunctionMap["isSingleSpecies"]      = &REMORA::setSingleSpecies;
-    m_FunctionMap["isMultiPlot"]          = &REMORA::setMultiPlot;
-    m_FunctionMap["ForecastDataType"]     = &REMORA::setForecastPlotType;
-    m_FunctionMap["isMSYLineVisible"]     = &REMORA::setMSYLineVisible;
-    m_FunctionMap["r_Uncertainty"]        = &REMORA::setUncertaintyGrowth;
-    m_FunctionMap["K_Uncertainty"]        = &REMORA::setUncertaintyCarryingCapacity;
-    m_FunctionMap["HarvestType"]          = &REMORA::setHarvestType;
-    m_FunctionMap["H_Uncertainty"]        = &REMORA::setUncertaintyHarvest;
-    m_FunctionMap["MaxYScaleFactor"]      = &REMORA::setMaxYScaleFactor;
-    m_FunctionMap["NumScaleFactorPoints"] = &REMORA::setNumScaleFactorPoints;
-    m_FunctionMap["point"]                = &REMORA::setAScaleFactorPoint;
+    m_FunctionMap["Forecast"]             = &REMORA_UI::setScenarioName;
+    m_FunctionMap["NumYearsPerRun"]       = &REMORA_UI::setNumYearsPerRun;
+    m_FunctionMap["NumRunsPerForecast"]   = &REMORA_UI::setNumRunsPerForecast;
+    m_FunctionMap["isDeterministic"]      = &REMORA_UI::setDeterministic;
+    m_FunctionMap["isSingleSpecies"]      = &REMORA_UI::setSingleSpecies;
+    m_FunctionMap["isMultiPlot"]          = &REMORA_UI::setMultiPlot;
+    m_FunctionMap["ForecastDataType"]     = &REMORA_UI::setForecastPlotType;
+    m_FunctionMap["isMSYLineVisible"]     = &REMORA_UI::setMSYLineVisible;
+    m_FunctionMap["r_Uncertainty"]        = &REMORA_UI::setUncertaintyGrowth;
+    m_FunctionMap["K_Uncertainty"]        = &REMORA_UI::setUncertaintyCarryingCapacity;
+    m_FunctionMap["HarvestType"]          = &REMORA_UI::setHarvestType;
+    m_FunctionMap["H_Uncertainty"]        = &REMORA_UI::setUncertaintyHarvest;
+    m_FunctionMap["MaxYScaleFactor"]      = &REMORA_UI::setMaxYScaleFactor;
+    m_FunctionMap["NumScaleFactorPoints"] = &REMORA_UI::setNumScaleFactorPoints;
+    m_FunctionMap["point"]                = &REMORA_UI::setAScaleFactorPoint;
 
     setupMovableLineCharts(SpeciesList);
     setupConnections();
@@ -147,19 +149,19 @@ REMORA::REMORA(
 
 }
 
-REMORA::~REMORA()
+REMORA_UI::~REMORA_UI()
 {
 
 }
 
 bool
-REMORA::couldShowMSYCB()
+REMORA_UI::couldShowMSYCB()
 {
     return (isSingleSpecies() || (isMultiSpecies() && isMultiPlot()));
 }
 
 void
-REMORA::drawMultiSpeciesChart()
+REMORA_UI::drawMultiSpeciesChart()
 {
     bool isFishingMortality = isFishingMortalityPlotType();
     bool isAbsoluteBiomass  = isAbsoluteBiomassPlotType();
@@ -218,7 +220,7 @@ REMORA::drawMultiSpeciesChart()
 
     if (isFishingMortality) {
         YLabel = "Fishing Mortality (C/Bc)";
-        if (! m_DatabasePtr->getTimeSeriesData(m_Widget,m_Logger,m_ProjectSettingsConfig,
+        if (! m_DatabasePtr->getTimeSeriesData(m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
                                                "","","Catch",NumSpecies,NumObservedYears,Catch)) {
             return;
         }
@@ -240,7 +242,7 @@ REMORA::drawMultiSpeciesChart()
 
     // Plot ForecastBiomass data
     if (! m_DatabasePtr->getForecastBiomass(
-                m_Widget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ForecastName,
                 NumSpecies,NumYearsPerRun,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomass)) {
@@ -325,7 +327,7 @@ REMORA::drawMultiSpeciesChart()
 }
 
 void
-REMORA::drawMSYLines()
+REMORA_UI::drawMSYLines()
 {
     int StartYear;
     int EndYear;
@@ -453,7 +455,7 @@ REMORA::drawMSYLines()
 }
 
 void
-REMORA::drawMSYLines(
+REMORA_UI::drawMSYLines(
         QChart* chart,
         int& SpeciesNum,
         int& NumSpecies,
@@ -556,7 +558,7 @@ REMORA::drawMSYLines(
 }
 
 void
-REMORA::drawPlot()
+REMORA_UI::drawPlot()
 {
     m_ForecastBiomassLineChart->clear(m_ChartWidget);
     m_ForecastHarvestLineChart->clear(m_ChartWidget);
@@ -574,7 +576,7 @@ REMORA::drawPlot()
 }
 
 void
-REMORA::drawSingleSpeciesChart()
+REMORA_UI::drawSingleSpeciesChart()
 {
     bool isFishingMortality  = isFishingMortalityPlotType();
     bool isAbsoluteBiomass   = isAbsoluteBiomassPlotType();
@@ -643,7 +645,7 @@ REMORA::drawSingleSpeciesChart()
 
     if (isFishingMortality) {
         YLabel = "Fishing Mortality (C/Bc)";
-        if (! m_DatabasePtr->getTimeSeriesData(m_Widget,m_Logger,m_ProjectSettingsConfig,
+        if (! m_DatabasePtr->getTimeSeriesData(m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
                                                "","","Catch",NumSpecies,NumObservedYears,Catch)) {
             return;
         }
@@ -659,7 +661,7 @@ REMORA::drawSingleSpeciesChart()
     }
 
     if (! m_DatabasePtr->getForecastBiomassMonteCarlo(
-                m_Widget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ForecastName,
                 NumSpecies,NumYearsPerRun,NumRunsPerForecast,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomassMonteCarlo)) {
@@ -668,7 +670,7 @@ REMORA::drawSingleSpeciesChart()
 
     // Plot ForecastBiomass data
     if (! m_DatabasePtr->getForecastBiomass(
-                m_Widget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ForecastName,
                 NumSpecies,NumYearsPerRun,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomass)) {
@@ -676,7 +678,7 @@ REMORA::drawSingleSpeciesChart()
     }
 
     if (! m_DatabasePtr->getForecastMonteCarloParameters(
-                m_Widget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ForecastName,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 HoverData)) {
         return;
@@ -1005,7 +1007,7 @@ REMORA::drawSingleSpeciesChart()
 
 
 void
-REMORA::enableWidgets(bool enable)
+REMORA_UI::enableWidgets(bool enable)
 {
     MModePctMSYLE->setEnabled(enable);
     MModePctMSYDL->setEnabled(enable);
@@ -1029,37 +1031,37 @@ REMORA::enableWidgets(bool enable)
 }
 
 QString
-REMORA::getCarryingCapacityUncertainty()
+REMORA_UI::getCarryingCapacityUncertainty()
 {
     return MModeKParamLE->text();
 }
 
 QString
-REMORA::getForecastPlotType()
+REMORA_UI::getForecastPlotType()
 {
     return MModeForecastPlotTypeCMB->currentText();
 }
 
 QString
-REMORA::getGrowthUncertainty()
+REMORA_UI::getGrowthUncertainty()
 {
     return MModeRParamLE->text();
 }
 
 QString
-REMORA::getHarvestType()
+REMORA_UI::getHarvestType()
 {
     return MModeHarvestTypePB->text();
 }
 
 QString
-REMORA::getHarvestUncertainty()
+REMORA_UI::getHarvestUncertainty()
 {
     return MModeHParamLE->text();
 }
 
 void
-REMORA::getLastYearsCatchValues(
+REMORA_UI::getLastYearsCatchValues(
         int& lastYear,
         std::vector<double>& lastYearsCatchValues)
 {
@@ -1081,7 +1083,7 @@ REMORA::getLastYearsCatchValues(
 }
 
 int
-REMORA::getMaxYScaleFactor(const int& speciesNum)
+REMORA_UI::getMaxYScaleFactor(const int& speciesNum)
 {
     if (speciesNum >= 0) {
         return m_MovableLineCharts[speciesNum]->getMaxYScaleFactor();
@@ -1091,13 +1093,13 @@ REMORA::getMaxYScaleFactor(const int& speciesNum)
 }
 
 int
-REMORA::getNumRunsPerForecast()
+REMORA_UI::getNumRunsPerForecast()
 {
     return MModeRunsPerForecastLE->text().toInt();
 }
 
 int
-REMORA::getNumScaleFactorPoints(const int& speciesNum)
+REMORA_UI::getNumScaleFactorPoints(const int& speciesNum)
 {
     if (speciesNum >= 0) {
         return m_MovableLineCharts[speciesNum]->getNumPoints();
@@ -1107,26 +1109,26 @@ REMORA::getNumScaleFactorPoints(const int& speciesNum)
 }
 
 int
-REMORA::getNumSpecies()
+REMORA_UI::getNumSpecies()
 {
     return MModeSpeciesCMB->count();
 }
 
 int
-REMORA::getNumYearsPerRun()
+REMORA_UI::getNumYearsPerRun()
 {
     return MModeYearsPerRunLE->text().toInt();
 }
 
 
 double
-REMORA::getPctMSYValue()
+REMORA_UI::getPctMSYValue()
 {
     return MModePctMSYDL->value()/100.0;
 }
 
 QList<QPointF>
-REMORA::getScaleFactorPoints(const int& speciesNum)
+REMORA_UI::getScaleFactorPoints(const int& speciesNum)
 {
     if (speciesNum >= 0) {
         return m_MovableLineCharts[speciesNum]->getPoints();
@@ -1136,7 +1138,7 @@ REMORA::getScaleFactorPoints(const int& speciesNum)
 }
 
 double
-REMORA::getScaleValueFromPlot(int speciesNum, int year)
+REMORA_UI::getScaleValueFromPlot(int speciesNum, int year)
 {
     double scaleValue;
 
@@ -1153,19 +1155,25 @@ REMORA::getScaleValueFromPlot(int speciesNum, int year)
 }
 
 QString
-REMORA::getScenarioName()
+REMORA_UI::getScenarioName()
 {
     return MModeScenarioNameLE->text();
 }
 
 int
-REMORA::getSpeciesNum()
+REMORA_UI::getSpeciesNum()
 {
     return MModeSpeciesCMB->currentIndex();
 }
 
+QWidget*
+REMORA_UI::getTopLevelWidget()
+{
+    return m_TopLevelWidget;
+}
+
 void
-REMORA::getYearRange(int& firstYear, int& lastYear)
+REMORA_UI::getYearRange(int& firstYear, int& lastYear)
 {
     int StartYear = 0;
     int NumYears  = 0;
@@ -1186,7 +1194,7 @@ REMORA::getYearRange(int& firstYear, int& lastYear)
 }
 
 void
-REMORA::grabImage(QPixmap& pm)
+REMORA_UI::grabImage(QPixmap& pm)
 {
     if (isSingleSpecies()) {
         // This will grab the Harvest Scale Factor plot as well as the Model plot(s)
@@ -1202,67 +1210,67 @@ REMORA::grabImage(QPixmap& pm)
 }
 
 bool
-REMORA::isAbsoluteBiomassPlotType()
+REMORA_UI::isAbsoluteBiomassPlotType()
 {
     return (MModeForecastPlotTypeCMB->currentText() == "Biomass (absolute)");
 }
 
 bool
-REMORA::isDeterministic()
+REMORA_UI::isDeterministic()
 {
     return MModeDeterministicRB->isChecked();
 }
 
 bool
-REMORA::isFishingMortalityPlotType()
+REMORA_UI::isFishingMortalityPlotType()
 {
     return (MModeForecastPlotTypeCMB->currentText() == "Fishing Mortality");
 }
 
 bool
-REMORA::isMultiPlot()
+REMORA_UI::isMultiPlot()
 {
     return (MModeMultiPlotTypePB->text() == "1+");
 }
 
 bool
-REMORA::isMultiSpecies()
+REMORA_UI::isMultiSpecies()
 {
     return MModePlotTypeMSRB->isChecked();
 }
 
 bool
-REMORA::isMSYBoxChecked()
+REMORA_UI::isMSYBoxChecked()
 {
     return MModeShowMSYCB->isChecked();
 }
 
 bool
-REMORA::isPctMSYBoxChecked()
+REMORA_UI::isPctMSYBoxChecked()
 {
     return MModePctMSYCB->isChecked();
 }
 
 bool
-REMORA::isRelativeBiomassPlotType()
+REMORA_UI::isRelativeBiomassPlotType()
 {
     return (MModeForecastPlotTypeCMB->currentText() == "Biomass (relative)");
 }
 
 bool
-REMORA::isSingleSpecies()
+REMORA_UI::isSingleSpecies()
 {
     return MModePlotTypeSSRB->isChecked();
 }
 
 bool
-REMORA::isYAxisLocked()
+REMORA_UI::isYAxisLocked()
 {
     return MModeYAxisLockCB->isChecked();
 }
 
 void
-REMORA::loadForecastScenario(QString filename)
+REMORA_UI::loadForecastScenario(QString filename)
 {
     QString line;
     QString controlName;
@@ -1293,8 +1301,22 @@ REMORA::loadForecastScenario(QString filename)
     MModeMaxScaleFactorPB->setText(QString::number(m_MaxYAxisValues[0]));
 }
 
+QWidget*
+REMORA_UI::loadUI(QWidget* parentW)
+{
+    QWidget* widget;
+    QUiLoader loader;
+
+    QFile file(":/forms/REMORA_UI.ui");
+    file.open(QFile::ReadOnly);
+    widget = loader.load(&file,parentW);
+    file.close();
+
+    return widget;
+}
+
 void
-REMORA::removeMSYLines(
+REMORA_UI::removeMSYLines(
         QChart*             chart,
         const QStringList&  MSYTypes)
 {
@@ -1312,7 +1334,7 @@ REMORA::removeMSYLines(
 }
 
 void
-REMORA::removeAllMSYLines(QString type)
+REMORA_UI::removeAllMSYLines(QString type)
 {
     QStringList types;
     if (type == "%") {
@@ -1330,7 +1352,7 @@ REMORA::removeAllMSYLines(QString type)
 }
 
 void
-REMORA::resetControls()
+REMORA_UI::resetControls()
 {
    setScenarioName("");
    setUncertaintyGrowth("0");
@@ -1339,7 +1361,7 @@ REMORA::resetControls()
 }
 
 void
-REMORA::resetNumYearsOnScaleFactorCharts()
+REMORA_UI::resetNumYearsOnScaleFactorCharts()
 {
     for (unsigned i=0; i<m_MovableLineCharts.size(); ++i) {
         m_MovableLineCharts[i]->setRange(m_NumYearsPerRun);
@@ -1347,7 +1369,7 @@ REMORA::resetNumYearsOnScaleFactorCharts()
 }
 
 void
-REMORA::resetScenarioName()
+REMORA_UI::resetScenarioName()
 {
     QString scenarioName = getScenarioName();
     scenarioName.remove('*');
@@ -1355,7 +1377,7 @@ REMORA::resetScenarioName()
 }
 
 void
-REMORA::saveForecastParameters()
+REMORA_UI::saveForecastParameters()
 {
     int startYear;
     int endYear;
@@ -1382,7 +1404,7 @@ REMORA::saveForecastParameters()
 }
 
 bool
-REMORA::saveForecastScenario(QString filename)
+REMORA_UI::saveForecastScenario(QString filename)
 {
     bool retv = false;
     int numScaleFactorPoints;
@@ -1430,7 +1452,7 @@ REMORA::saveForecastScenario(QString filename)
 }
 
 void
-REMORA::saveHarvestData()
+REMORA_UI::saveHarvestData()
 {
     int NumYears = 0;
     int startYear;
@@ -1448,7 +1470,7 @@ REMORA::saveHarvestData()
     std::vector<double> lastYearsCatchValues;
 
     bool systemFound = m_DatabasePtr->getAlgorithmIdentifiers(
-                m_Widget,m_Logger,m_ProjectSettingsConfig,
+                m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 CompetitionForm,nmfConstantsMSSPM::DontShowPopupError);
     if (! systemFound) {
@@ -1467,7 +1489,7 @@ REMORA::saveHarvestData()
     if (errorMsg != " ") {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
-        QMessageBox::warning(m_Widget, "Error",
+        QMessageBox::warning(m_TopLevelWidget, "Error",
                              "\nError in Save command.  Couldn't delete all records from" +
                              QString::fromStdString(m_HarvestType) + " table.\n",
                              QMessageBox::Ok);
@@ -1502,13 +1524,13 @@ REMORA::saveHarvestData()
 }
 
 void
-REMORA::saveOutputBiomassData()
+REMORA_UI::saveOutputBiomassData()
 {
     emit SaveOutputBiomassData(m_ForecastName);
 }
 
 void
-REMORA::saveUncertaintyParameters()
+REMORA_UI::saveUncertaintyParameters()
 {
     std::string cmd;
     std::string errorMsg;
@@ -1584,7 +1606,7 @@ REMORA::saveUncertaintyParameters()
 }
 
 void
-REMORA::setAScaleFactorPoint(QString arg1)
+REMORA_UI::setAScaleFactorPoint(QString arg1)
 {
     QStringList parts = arg1.split(" ");
     double xValue = parts[0].toDouble();
@@ -1604,20 +1626,20 @@ REMORA::setAScaleFactorPoint(QString arg1)
 }
 
 void
-REMORA::setDeterministic(QString isChecked)
+REMORA_UI::setDeterministic(QString isChecked)
 {
    MModeDeterministicRB->setChecked(isChecked == "1");
    MModeStochasticRB->setChecked(   isChecked == "0");
 }
 
 void
-REMORA::setForecastName(QString forecastName)
+REMORA_UI::setForecastName(QString forecastName)
 {
     m_ForecastName = forecastName.toStdString();
 }
 
 void
-REMORA::setForecastNumRunsPerForecast(int numRunsPerForecast)
+REMORA_UI::setForecastNumRunsPerForecast(int numRunsPerForecast)
 {
     m_NumRunsPerForecast = numRunsPerForecast;
     MModeRunsPerForecastSL->blockSignals(true);
@@ -1629,7 +1651,7 @@ REMORA::setForecastNumRunsPerForecast(int numRunsPerForecast)
 }
 
 void
-REMORA::setForecastNumYearsPerRun(int numYearsPerRun)
+REMORA_UI::setForecastNumYearsPerRun(int numYearsPerRun)
 {
     m_NumYearsPerRun = numYearsPerRun;
     MModeYearsPerRunLE->blockSignals(true);
@@ -1643,13 +1665,13 @@ REMORA::setForecastNumYearsPerRun(int numYearsPerRun)
 }
 
 void
-REMORA::setForecastPlotType(QString arg1)
+REMORA_UI::setForecastPlotType(QString arg1)
 {
     MModeForecastPlotTypeCMB->setCurrentText(arg1);
 }
 
 void
-REMORA::setHarvestType(QString arg1)
+REMORA_UI::setHarvestType(QString arg1)
 {
     MModeHarvestTypePB->setText(arg1);
     if (arg1 == "Catch") {
@@ -1662,7 +1684,7 @@ REMORA::setHarvestType(QString arg1)
 }
 
 void
-REMORA::setMaxYScaleFactor(QString maxY)
+REMORA_UI::setMaxYScaleFactor(QString maxY)
 {
     int value = (maxY.toInt()-1 == 0) ? MAX_SCALE_VALUE : maxY.toInt()-1;
 
@@ -1676,7 +1698,7 @@ REMORA::setMaxYScaleFactor(QString maxY)
 }
 
 void
-REMORA::setMSYLineVisible(QString arg1)
+REMORA_UI::setMSYLineVisible(QString arg1)
 {
     MModeShowMSYCB->blockSignals(true);
     MModeShowMSYCB->setChecked(arg1 == "1");
@@ -1684,7 +1706,7 @@ REMORA::setMSYLineVisible(QString arg1)
 }
 
 void
-REMORA::setMultiPlot(QString isChecked)
+REMORA_UI::setMultiPlot(QString isChecked)
 {
     bool isMultiPlot = (isChecked == "1");
 
@@ -1696,7 +1718,7 @@ REMORA::setMultiPlot(QString isChecked)
 }
 
 void
-REMORA::setNumRunsPerForecast(QString numRuns)
+REMORA_UI::setNumRunsPerForecast(QString numRuns)
 {
     MModeRunsPerForecastSL->setValue(numRuns.toInt());
     MModeRunsPerForecastLE->setText(numRuns);
@@ -1704,7 +1726,7 @@ REMORA::setNumRunsPerForecast(QString numRuns)
 
 
 void
-REMORA::setNumScaleFactorPoints(QString arg1)
+REMORA_UI::setNumScaleFactorPoints(QString arg1)
 {
     m_MovableLineCharts[m_IndexScaleFactorChart1++]->resetPoints();
     ++m_IndexScaleFactorChart2;
@@ -1712,7 +1734,7 @@ REMORA::setNumScaleFactorPoints(QString arg1)
 }
 
 void
-REMORA::setNumYearsPerRun(QString numYearsStr)
+REMORA_UI::setNumYearsPerRun(QString numYearsStr)
 {
     int numYears = numYearsStr.toInt();
 
@@ -1724,7 +1746,7 @@ REMORA::setNumYearsPerRun(QString numYearsStr)
 }
 
 void
-REMORA::setScenarioChanged(bool state)
+REMORA_UI::setScenarioChanged(bool state)
 {
     m_ScenarioChanged = state;
     QString scenarioName = getScenarioName();
@@ -1736,13 +1758,13 @@ REMORA::setScenarioChanged(bool state)
 }
 
 void
-REMORA::setScenarioName(QString scenarioName)
+REMORA_UI::setScenarioName(QString scenarioName)
 {
     MModeScenarioNameLE->setText(scenarioName);
 }
 
 void
-REMORA::setSingleSpecies(QString isChecked)
+REMORA_UI::setSingleSpecies(QString isChecked)
 {
     bool isSingleSpecies = (isChecked == "1");
     MModePlotTypeSSRB->setChecked(     isSingleSpecies);
@@ -1752,7 +1774,7 @@ REMORA::setSingleSpecies(QString isChecked)
 }
 
 void
-REMORA::setSpeciesList(const QStringList& speciesList)
+REMORA_UI::setSpeciesList(const QStringList& speciesList)
 {
     MModeSpeciesCMB->blockSignals(true);
     MModeSpeciesCMB->clear();
@@ -1761,28 +1783,28 @@ REMORA::setSpeciesList(const QStringList& speciesList)
 }
 
 void
-REMORA::setUncertaintyCarryingCapacity(QString arg1)
+REMORA_UI::setUncertaintyCarryingCapacity(QString arg1)
 {
     MModeKParamDL->setValue(arg1.toInt());
     MModeKParamLE->setText(arg1);
 }
 
 void
-REMORA::setUncertaintyGrowth(QString arg1)
+REMORA_UI::setUncertaintyGrowth(QString arg1)
 {
     MModeRParamDL->setValue(arg1.toInt());
     MModeRParamLE->setText(arg1);
 }
 
 void
-REMORA::setUncertaintyHarvest(QString arg1)
+REMORA_UI::setUncertaintyHarvest(QString arg1)
 {
     MModeHParamDL->setValue(arg1.toInt());
     MModeHParamLE->setText(arg1);
 }
 
 void
-REMORA::setupConnections()
+REMORA_UI::setupConnections()
 {
     connect(MModeYearsPerRunSL,       SIGNAL(valueChanged(int)),
             this,                     SLOT(callback_YearsPerRunSL(int)));
@@ -1831,7 +1853,7 @@ REMORA::setupConnections()
 }
 
 void
-REMORA::setupMovableLineCharts(const QStringList& SpeciesList)
+REMORA_UI::setupMovableLineCharts(const QStringList& SpeciesList)
 {
     int i=0;
     int startYear;
@@ -1873,7 +1895,7 @@ REMORA::setupMovableLineCharts(const QStringList& SpeciesList)
 }
 
 void
-REMORA::resetXAxis()
+REMORA_UI::resetXAxis()
 {
     int startYear;
     int endYear;
@@ -1894,7 +1916,7 @@ REMORA::resetXAxis()
 }
 
 void
-REMORA::resetYAxis()
+REMORA_UI::resetYAxis()
 {
     if (m_MaxYAxis > 0) {
         QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axisY());
@@ -1904,7 +1926,7 @@ REMORA::resetYAxis()
 }
 
 void
-REMORA::updateYearlyScaleFactorPoints()
+REMORA_UI::updateYearlyScaleFactorPoints()
 {
     for (int i=0; i<getNumSpecies(); ++i) {
         m_MovableLineCharts[i]->calculateYearlyPoints();
@@ -1915,7 +1937,7 @@ REMORA::updateYearlyScaleFactorPoints()
 
 
 void
-REMORA::callback_DelPB()
+REMORA_UI::callback_DelPB()
 {
    QString msg;
    QString fullFilename;
@@ -1923,7 +1945,7 @@ REMORA::callback_DelPB()
 
    if (scenarioName.isEmpty()) {
        msg = "\nA scenario file must be loaded in order to delete it.\n";
-       QMessageBox::information(m_Widget, tr("Delete Scenario"), msg, QMessageBox::Ok);
+       QMessageBox::information(m_TopLevelWidget, tr("Delete Scenario"), msg, QMessageBox::Ok);
        return;
 
    }
@@ -1931,14 +1953,14 @@ REMORA::callback_DelPB()
    msg = "\nOK to delete scenario: " + scenarioName + " ?\n\nThis cannot be undone.\n";
 
    QMessageBox::StandardButton reply = QMessageBox::question(
-               m_Widget,"Delete Scenario",msg,
+               m_TopLevelWidget,"Delete Scenario",msg,
                QMessageBox::Yes|QMessageBox::No);
    if (reply == QMessageBox::Yes) {
        fullFilename = QDir(m_RemoraScenarioDir).filePath(scenarioName);
        bool ok = QFile::remove(fullFilename);
        if (ok) {
            msg = "\nScenario file successfully deleted: " + scenarioName + "\n";
-           QMessageBox::information(m_Widget, tr("Delete Scenario"), msg, QMessageBox::Ok);
+           QMessageBox::information(m_TopLevelWidget, tr("Delete Scenario"), msg, QMessageBox::Ok);
            resetControls();
        } else {
            msg = "Error: Couldn't delete scenario file: " + fullFilename;
@@ -1948,14 +1970,14 @@ REMORA::callback_DelPB()
 }
 
 void
-REMORA::callback_DeterministicRB(bool pressed)
+REMORA_UI::callback_DeterministicRB(bool pressed)
 {
     MModeStochasticRB->setChecked(! pressed);
     setScenarioChanged(true);
 }
 
 void
-REMORA::callback_ForecastPlotTypeCMB(QString type)
+REMORA_UI::callback_ForecastPlotTypeCMB(QString type)
 {
     bool showMSYCheckboxes = couldShowMSYCB();
 
@@ -1976,16 +1998,16 @@ REMORA::callback_ForecastPlotTypeCMB(QString type)
 }
 
 void
-REMORA::callback_KeyPressed(QKeyEvent* event)
+REMORA_UI::callback_KeyPressed(QKeyEvent* event)
 {
      emit KeyPressed(event);
 }
 
 void
-REMORA::callback_LoadPB()
+REMORA_UI::callback_LoadPB()
 {
     QString filename = QFileDialog::getOpenFileName(
-                m_Widget,
+                m_TopLevelWidget,
                 tr("Load Forecast Scenario"),
                 m_RemoraScenarioDir.toLatin1(),
                 tr("*.scn"));
@@ -1998,7 +2020,7 @@ REMORA::callback_LoadPB()
 }
 
 void
-REMORA::callback_MaxScaleFactorPB()
+REMORA_UI::callback_MaxScaleFactorPB()
 {
     int newValue;
     int speciesNum = getSpeciesNum();
@@ -2013,19 +2035,19 @@ REMORA::callback_MaxScaleFactorPB()
 }
 
 void
-REMORA::callback_MouseMoved(QMouseEvent* event)
+REMORA_UI::callback_MouseMoved(QMouseEvent* event)
 {
     emit MouseMoved(event);
 }
 
 void
-REMORA::callback_MouseReleased(QMouseEvent* event)
+REMORA_UI::callback_MouseReleased(QMouseEvent* event)
 {
     emit MouseReleased(event);
 }
 
 void
-REMORA::callback_MSYCB(bool isChecked)
+REMORA_UI::callback_MSYCB(bool isChecked)
 {
     if (isChecked) {
         drawMSYLines();
@@ -2036,7 +2058,7 @@ REMORA::callback_MSYCB(bool isChecked)
 }
 
 void
-REMORA::callback_MultiPlotTypePB()
+REMORA_UI::callback_MultiPlotTypePB()
 {
     if (MModeMultiPlotTypePB->text() == "1") {
         MModeMultiPlotTypePB->setText("1+");
@@ -2056,7 +2078,7 @@ REMORA::callback_MultiPlotTypePB()
 }
 
 void
-REMORA::callback_MultiSpeciesRB(bool pressed)
+REMORA_UI::callback_MultiSpeciesRB(bool pressed)
 {
     MModePlotTypeSSRB->setChecked(  ! pressed);
     MModeMultiPlotTypePB->setEnabled( pressed);
@@ -2072,7 +2094,7 @@ REMORA::callback_MultiSpeciesRB(bool pressed)
 }
 
 void
-REMORA::callback_PctMSYCB(bool isChecked)
+REMORA_UI::callback_PctMSYCB(bool isChecked)
 {
     MModePctMSYDL->setEnabled(isChecked);
     MModePctMSYLE->setEnabled(isChecked);
@@ -2086,7 +2108,7 @@ REMORA::callback_PctMSYCB(bool isChecked)
 }
 
 void
-REMORA::callback_PctMSYDL(int value)
+REMORA_UI::callback_PctMSYDL(int value)
 {
     MModePctMSYLE->setText(QString::number(value));
     removeAllMSYLines("%");
@@ -2095,7 +2117,7 @@ REMORA::callback_PctMSYDL(int value)
 }
 
 void
-REMORA::callback_RunPB()
+REMORA_UI::callback_RunPB()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -2111,7 +2133,7 @@ REMORA::callback_RunPB()
 }
 
 void
-REMORA::callback_RunsPerForecastSL(int value)
+REMORA_UI::callback_RunsPerForecastSL(int value)
 {
     MModeRunsPerForecastLE->setText(QString::number(value));
     m_NumRunsPerForecast = value;
@@ -2119,13 +2141,13 @@ REMORA::callback_RunsPerForecastSL(int value)
 }
 
 void
-REMORA::callback_SavePB()
+REMORA_UI::callback_SavePB()
 {
     QString filename = "";
     QString fullFilename = "";
 
     filename = QFileDialog::getSaveFileName(
-                m_Widget,
+                m_TopLevelWidget,
                 tr("Save Forecast Scenario"),
                 m_RemoraScenarioDir.toLatin1(),
                 tr("*.scn"));
@@ -2160,7 +2182,7 @@ REMORA::callback_SavePB()
 }
 
 void
-REMORA::callback_SingleSpeciesRB(bool pressed)
+REMORA_UI::callback_SingleSpeciesRB(bool pressed)
 {
     MModePlotTypeMSRB->setChecked(   ! pressed);
     MModeYAxisLockCB->setEnabled(      pressed);
@@ -2172,7 +2194,7 @@ REMORA::callback_SingleSpeciesRB(bool pressed)
 }
 
 void
-REMORA::callback_SpeciesCMB(QString species)
+REMORA_UI::callback_SpeciesCMB(QString species)
 {
     int speciesNum = getSpeciesNum();
     int numMovableLines = m_MovableLineCharts.size();
@@ -2189,21 +2211,21 @@ REMORA::callback_SpeciesCMB(QString species)
 }
 
 void
-REMORA::callback_StochasticRB(bool pressed)
+REMORA_UI::callback_StochasticRB(bool pressed)
 {
     MModeDeterministicRB->setChecked(! pressed);
     setScenarioChanged(true);
 }
 
 void
-REMORA::callback_UncertaintyHarvestParameterDL(int value)
+REMORA_UI::callback_UncertaintyHarvestParameterDL(int value)
 {
     MModeHParamLE->setText(QString::number(value));
     setScenarioChanged(true);
 }
 
 void
-REMORA::callback_UncertaintyHarvestParameterPB()
+REMORA_UI::callback_UncertaintyHarvestParameterPB()
 {
     QString harvestType = getHarvestType();
 
@@ -2221,21 +2243,21 @@ REMORA::callback_UncertaintyHarvestParameterPB()
 }
 
 void
-REMORA::callback_UncertaintyKParameterDL(int value)
+REMORA_UI::callback_UncertaintyKParameterDL(int value)
 {
     MModeKParamLE->setText(QString::number(value));
     setScenarioChanged(true);
 }
 
 void
-REMORA::callback_UncertaintyRParameterDL(int value)
+REMORA_UI::callback_UncertaintyRParameterDL(int value)
 {
     MModeRParamLE->setText(QString::number(value));
     setScenarioChanged(true);
 }
 
 void
-REMORA::callback_YAxisLockedCB(bool checked)
+REMORA_UI::callback_YAxisLockedCB(bool checked)
 {
     if (m_ChartWidget->axisY()) {
         QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axisY());
@@ -2250,7 +2272,7 @@ REMORA::callback_YAxisLockedCB(bool checked)
 }
 
 void
-REMORA::resetYearsPerRunOnScaleFactorPlot()
+REMORA_UI::resetYearsPerRunOnScaleFactorPlot()
 {
     int startYear;
     int endYear;
@@ -2269,7 +2291,7 @@ REMORA::resetYearsPerRunOnScaleFactorPlot()
 }
 
 void
-REMORA::callback_YearsPerRunSL(int value)
+REMORA_UI::callback_YearsPerRunSL(int value)
 {
     MModeYearsPerRunLE->setText(QString::number(value));
     m_NumYearsPerRun = value;

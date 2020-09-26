@@ -41,6 +41,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
+#include <QUiLoader>
 #include <QVBoxLayout>
 
 #include "nmfChartMovableLine.h"
@@ -56,7 +57,7 @@
  * definitions for the REMORA Management tool. Please note that
  * this must be built with the nmfCharts library.
  */
-class REMORA : public QObject
+class REMORA_UI : public QObject
 {
     Q_OBJECT
 
@@ -118,7 +119,7 @@ private:
     nmfDatabase*          m_DatabasePtr;
     nmfLogger*            m_Logger;
     std::map<QString,int> m_SpeciesMap;
-    std::map<QString, void(REMORA::*)(
+    std::map<QString, void(REMORA_UI::*)(
             QString arg)> m_FunctionMap;
     std::string           m_ForecastName;
     std::string           m_HarvestType;
@@ -137,7 +138,8 @@ private:
     QList<QChartView*>    m_Views;
     QString               m_RemoraScenarioDir;
     QWidget*              m_GridParent;
-    QWidget*              m_Widget;
+    QWidget*              m_TopLevelWidget;
+    QWidget*              m_REMORAWidget;
 
     bool couldShowMSYCB();
     void drawMultiSpeciesChart();
@@ -194,6 +196,7 @@ private:
     bool isSingleSpecies();
     bool isYAxisLocked();
     void loadForecastScenario(QString filename);
+    QWidget* loadUI(QWidget* parentW);
     void removeAllMSYLines(QString type);
     void removeMSYLines(
             QChart*             chart,
@@ -263,6 +266,7 @@ signals:
 
 public:
 
+//    REMORA_UI(QWidget* parent);
     /**
      * @brief Class definition for REMORA Management Tool
      * @param DatabasePtr : pointer to database
@@ -272,15 +276,14 @@ public:
      * @param SpeciesList : list of species
      * @param MModeWidget : parent widget in which to place this class
      */
-    REMORA(
+    REMORA_UI(
+            QWidget*     parent,
             nmfDatabase* DatabasePtr,
             nmfLogger*   Logger,
             std::string& ProjectDir,
             std::string& ProjectSettingsConfig,
-            QStringList& SpeciesList,
-            QWidget*     MModeWidget);
-    ~REMORA();
-
+            QStringList& SpeciesList);
+    ~REMORA_UI();
     /**
      * @brief getScaleValueFromPlot : returns harvest scale value for the passed in species and year
      * @param species : species number from the list of species
@@ -288,6 +291,11 @@ public:
      * @return Returns scale factor (y-value) corresponding to the passed in values
      */
     double getScaleValueFromPlot(int species, int year);
+    /**
+     * @brief Gets the top level widget underneath of which contains all the REMORA widgets
+     * @return Top level REMORA widget
+     */
+    QWidget* getTopLevelWidget();
     /**
      * @brief grabImage : Performs a "smart" screen grab based upon the state of the controls
      * @param pixmap : Returns the pixmap of the captured widget
