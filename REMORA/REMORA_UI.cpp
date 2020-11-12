@@ -1394,7 +1394,7 @@ REMORA_UI::saveForecastParameters()
             ", IsDeterministic = " + std::to_string(isDeterministic()) +
             "  WHERE ForecastName = '" + m_ProjectSettingsConfig + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
-    if (errorMsg != " ") {
+    if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"[Error 1] REMORA: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
     }
@@ -1486,7 +1486,7 @@ REMORA_UI::saveHarvestData()
     cmd = "DELETE FROM " + m_HarvestType + " WHERE ForecastName = '" +
            m_ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
-    if (errorMsg != " ") {
+    if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(m_TopLevelWidget, "Error",
@@ -1515,7 +1515,7 @@ REMORA_UI::saveHarvestData()
     }
     cmd = cmd.substr(0,cmd.size()-1);
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
-    if (errorMsg != " ") {
+    if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: Write table error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QApplication::restoreOverrideCursor();
@@ -1565,7 +1565,7 @@ REMORA_UI::saveUncertaintyParameters()
     // Clear previous entry in ForecastUncertainty table
     cmd = "DELETE FROM ForecastUncertainty WHERE ForecastName = '" + ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
-    if (errorMsg != " ") {
+    if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::callback_SavePB: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(MModeWindowWidget, "Error",
@@ -1595,7 +1595,7 @@ REMORA_UI::saveUncertaintyParameters()
     cmd = cmd.substr(0,cmd.size()-1);
 
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
-    if (errorMsg != " ") {
+    if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::callback_SavePB: Write table error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(MModeWindowWidget, "Error",
