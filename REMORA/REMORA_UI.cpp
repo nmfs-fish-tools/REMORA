@@ -175,7 +175,7 @@ REMORA_UI::drawMultiSpeciesChart()
     int YMinSliderVal      = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
-    int NoUncertaintyRun   = 0;
+    // int NoUncertaintyRun   = 0;
     int SpeciesNum         = -1;
     int Theme              = 0;
     double ScaleVal        = 1.0;
@@ -310,15 +310,17 @@ REMORA_UI::drawMultiSpeciesChart()
     removeMSYLines(m_ChartWidget,{"MSY = r/2","MSY = K/2"});
     removeMSYLines(m_ChartWidget,{"MSY = % of r/2","MSY = % of K/2"});
     if (isMSYBoxChecked()) {
-        drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                     NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+        drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                     // NumRunsPerForecast,NoUncertaintyRun,
+                     StartForecastYear,YMinSliderVal,
                      Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                      RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                      MainTitle,XLabel,YLabel,nmfConstants::ShowLegend,1.0);
     }
     if (isPctMSYBoxChecked()) {
-        drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                     NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+        drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                     // NumRunsPerForecast,NoUncertaintyRun,
+                     StartForecastYear,YMinSliderVal,
                      Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                      RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                      MainTitle,XLabel,YLabel,nmfConstants::ShowLegend,getPctMSYValue());
@@ -334,7 +336,7 @@ REMORA_UI::drawMSYLines()
     int NumSpecies;
     int StartForecastYear;
     int YMinSliderVal      = 0;
-    int NoUncertaintyRun   = 0;
+    // int NoUncertaintyRun   = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
@@ -378,11 +380,12 @@ REMORA_UI::drawMSYLines()
                 HoverLabels << "MSY = r/2";
                 ColumnLabelsForLegendMSY << "MSY = r/2";
             }
-            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                          NoUncertaintyRun,StartForecastYear,YMinSliderVal,
-                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
-                          RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
-                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
+            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                         // NumRunsPerForecast,NoUncertaintyRun,
+                         StartForecastYear,YMinSliderVal,
+                         Algorithm,Minimizer,ObjectiveCriterion,Scaling,
+                         RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
+                         MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
         }
         if (isPctMSYBoxChecked()) {
             HoverLabelsPct.clear();
@@ -394,13 +397,14 @@ REMORA_UI::drawMSYLines()
                 HoverLabelsPct << "MSY = % of r/2";
                 ColumnLabelsForLegendPctMSY << "MSY = % of r/2";
             }
-            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                          NoUncertaintyRun,StartForecastYear,YMinSliderVal,
-                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
-                          RowLabelsForBars,ColumnLabelsForLegendPctMSY,HoverLabelsPct,
-                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
+            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                         // NumRunsPerForecast,NoUncertaintyRun,
+                         StartForecastYear,YMinSliderVal,
+                         Algorithm,Minimizer,ObjectiveCriterion,Scaling,
+                         RowLabelsForBars,ColumnLabelsForLegendPctMSY,HoverLabelsPct,
+                         MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
         }
-        qobject_cast<QValueAxis*>(m_ChartWidget->axisY())->setTickCount(5);
+        qobject_cast<QValueAxis*>(m_ChartWidget->axes(Qt::Vertical).back())->setTickCount(5);
 
     } else if (isMultiPlot()) {
         SpeciesNum =  0;
@@ -423,8 +427,9 @@ REMORA_UI::drawMSYLines()
                     HoverLabels << "MSY = r/2";
                     ColumnLabelsForLegendMSY << "MSY = r/2";
                 }
-                drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                             NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+                drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,
+                             // NumRunsPerForecast,NoUncertaintyRun,
+                             StartForecastYear,YMinSliderVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                              MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
@@ -439,13 +444,14 @@ REMORA_UI::drawMSYLines()
                     HoverLabelsPct << "MSY = % of r/2";
                     ColumnLabelsForLegendPctMSY << "MSY = % of r/2";
                 }
-                drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                             NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+                drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,
+                             // NumRunsPerForecast,NoUncertaintyRun,
+                             StartForecastYear,YMinSliderVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegendPctMSY,HoverLabelsPct,
                              MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
             }
-            qobject_cast<QValueAxis*>(chart->axisY())->setTickCount(5);
+            qobject_cast<QValueAxis*>(chart->axes(Qt::Vertical).back())->setTickCount(5);
             ++SpeciesNum;
         }
 
@@ -460,8 +466,8 @@ REMORA_UI::drawMSYLines(
         int& SpeciesNum,
         int& NumSpecies,
         int& NumYearsPerRun,
-        int& NumRunsPerForecast,
-        int& NoUncertaintyRun,
+//        int& NumRunsPerForecast,
+//        int& NoUncertaintyRun,
         int& StartForecastYear,
         int& YMinSliderVal,
         std::string& Algorithm,
@@ -586,7 +592,7 @@ REMORA_UI::drawSingleSpeciesChart()
     int NumSpecies;
     int StartForecastYear;
     int YMinSliderVal      = 0;
-    int NoUncertaintyRun   = 0;
+    // int NoUncertaintyRun   = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
@@ -688,7 +694,7 @@ REMORA_UI::drawSingleSpeciesChart()
     ChartLinesMonteCarlo.clear();
     ChartLine.resize(NumYearsPerRun+1,ForecastBiomass.size());
     ChartLine.clear();
-    NoUncertaintyRun = ForecastBiomass.size();
+    // NoUncertaintyRun = ForecastBiomass.size();
 
     // Get ChartLinesMonteCarlo Data
     for (int species=0; species<NumSpecies; ++species) {
@@ -877,8 +883,9 @@ REMORA_UI::drawSingleSpeciesChart()
                 } else if (isRelativeBiomass) {
                     HoverLabels << "";
                 }
-                drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                             NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+                drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
+                             // NumRunsPerForecast, NoUncertaintyRun,
+                             StartForecastYear,YMinSliderVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabels,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
@@ -893,15 +900,16 @@ REMORA_UI::drawSingleSpeciesChart()
                 } else if (isRelativeBiomass) {
                     HoverLabelsPct << "";
                 }
-                drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                             NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+                drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
+                             // NumRunsPerForecast,NoUncertaintyRun,
+                             StartForecastYear,YMinSliderVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabelsPct,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
                              nmfConstants::DontShowLegend,getPctMSYValue());
             }
 
-            qobject_cast<QValueAxis*>(chart->axisY())->setTickCount(5);
+            qobject_cast<QValueAxis*>(chart->axes(Qt::Vertical).back())->setTickCount(5);
             ++species;
         }
 
@@ -979,8 +987,9 @@ REMORA_UI::drawSingleSpeciesChart()
             } else if (isRelativeBiomass) {
                 HoverLabels << "";
             }
-            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                         NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                         // NumRunsPerForecast,NoUncertaintyRun,
+                         StartForecastYear,YMinSliderVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegend,HoverLabels,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
@@ -994,14 +1003,15 @@ REMORA_UI::drawSingleSpeciesChart()
             } else if (isRelativeBiomass) {
                 HoverLabelsPct << "";
             }
-            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,NumRunsPerForecast,
-                         NoUncertaintyRun,StartForecastYear,YMinSliderVal,
+            drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
+                         // NumRunsPerForecast,NoUncertaintyRun,
+                         StartForecastYear,YMinSliderVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegend,HoverLabelsPct,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
         }
 
-        qobject_cast<QValueAxis*>(m_ChartWidget->axisY())->setTickCount(5);
+        qobject_cast<QValueAxis*>(m_ChartWidget->axes(Qt::Vertical).back())->setTickCount(5);
     }
 }
 
@@ -1906,11 +1916,11 @@ REMORA_UI::resetXAxis()
     endForecastYear = endYear + m_NumYearsPerRun;
     if (isMultiSpecies() && isMultiPlot()) {
         for (QChart* chart : m_Charts) {
-            chart->axisX()->setRange(endYear,endForecastYear);
+            chart->axes(Qt::Horizontal).back()->setRange(endYear,endForecastYear);
         }
     } else {
         if (m_ChartWidget->axes().size() != 0) {
-            m_ChartWidget->axisX()->setRange(endYear,endForecastYear);
+            m_ChartWidget->axes(Qt::Horizontal).back()->setRange(endYear,endForecastYear);
         }
     }
 }
@@ -1919,7 +1929,7 @@ void
 REMORA_UI::resetYAxis()
 {
     if (m_MaxYAxis > 0) {
-        QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axisY());
+        QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axes(Qt::Vertical).back());
         axisY->setMax(m_MaxYAxis);
         axisY->setTickCount(5);
     }
@@ -2259,8 +2269,8 @@ REMORA_UI::callback_UncertaintyRParameterDL(int value)
 void
 REMORA_UI::callback_YAxisLockedCB(bool checked)
 {
-    if (m_ChartWidget->axisY()) {
-        QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axisY());
+    if (m_ChartWidget->axes(Qt::Vertical).back()) {
+        QValueAxis* axisY = qobject_cast<QValueAxis*>(m_ChartWidget->axes(Qt::Vertical).back());
         if (checked) {
             m_MaxYAxis = axisY->max();
             axisY->setTickCount(3);
