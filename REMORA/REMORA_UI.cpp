@@ -683,8 +683,9 @@ REMORA_UI::drawSingleSpeciesChart()
         return;
     }
 
+    std::string currentSpecies = getCurrentSpecies();
     if (! m_DatabasePtr->getForecastMonteCarloParameters(
-                m_TopLevelWidget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,currentSpecies,m_ForecastName,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 HoverData)) {
         return;
@@ -1122,6 +1123,12 @@ int
 REMORA_UI::getNumSpecies()
 {
     return MModeSpeciesCMB->count();
+}
+
+std::string
+REMORA_UI::getCurrentSpecies()
+{
+    return MModeSpeciesCMB->currentText().toStdString();
 }
 
 int
@@ -2137,6 +2144,7 @@ REMORA_UI::callback_RunPB()
     saveHarvestData();
     saveOutputBiomassData();
     drawPlot();
+
     enableWidgets(true);
 
     QApplication::restoreOverrideCursor();

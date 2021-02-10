@@ -169,6 +169,7 @@ private:
     void drawSingleSpeciesChart();
     void enableWidgets(bool enable);
     QString getCarryingCapacityUncertainty();
+    std::string getCurrentSpecies();
     QString getForecastPlotType();
     QString getGrowthUncertainty();
     QString getHarvestType();
