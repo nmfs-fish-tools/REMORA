@@ -109,7 +109,6 @@ private:
     int                   m_IndexScaleFactorChart2;
     int                   m_IndexScaleFactorPoint;
     int                   m_NumRunsPerForecast;
-    int                   m_NumUnusedParameters;
     int                   m_NumYearsPerRun;
     double                m_MaxYAxis;
     nmfChartLine*         m_ForecastBiomassLineChart;

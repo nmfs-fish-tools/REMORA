@@ -1558,7 +1558,7 @@ REMORA_UI::saveUncertaintyParameters()
         SpeNames.push_back(MModeSpeciesCMB->itemText(i).toStdString());
     }
 
-    std::string ForecastName = "Sample_Schaefer";
+    std::string ForecastName =  m_ForecastName;
     std::vector<std::string> fields = {"ForecastName","Algorithm","Minimizer","ObjectiveCriterion","Scaling"};
     std::string queryStr = "SELECT ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling FROM Forecasts where ";
     queryStr += "ForecastName = '" + ForecastName + "'";
@@ -1575,6 +1575,7 @@ REMORA_UI::saveUncertaintyParameters()
     std::string Minimizer          = dataMap["Minimizer"][0];
     std::string ObjectiveCriterion = dataMap["ObjectiveCriterion"][0];
     std::string Scaling            = dataMap["Scaling"][0];
+    std::string InitBiomass        = "0.0"; // May need to supply a dial widget for this later
     std::string GrowthRate         = std::to_string(MModeRParamLE->text().toDouble()/100.0);
     std::string CarryingCapacity   = std::to_string(MModeKParamLE->text().toDouble()/100.0);
     std::string Harvest            = std::to_string(MModeHParamLE->text().toDouble()/100.0);
@@ -1591,17 +1592,22 @@ REMORA_UI::saveUncertaintyParameters()
         return;
     }
 
-    m_NumUnusedParameters = 7;  // RSK adjust this later
+    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity",
+                                  "Predation","Competition",
+                                  "BetaSpecies","BetaGuilds","Handling",
+                                  "Exponent","Catchability","Harvest"};
     cmd  = "INSERT INTO ForecastUncertainty (" ;
     cmd += "SpeName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
-    cmd += "GrowthRate,CarryingCapacity,Predation,Competition,BetaSpecies,";
-    cmd += "BetaGuilds,Handling,Exponent,Catchability,Harvest) VALUES ";
+    cmd +=  ParameterNames.join(",").toStdString();
+    cmd += ") VALUES ";
     for (unsigned i = 0; i < SpeNames.size(); ++i) { // Species
             cmd += "('" + SpeNames[i] + "','" + ForecastName + "','" + Algorithm +
                     "','" + Minimizer + "','" + ObjectiveCriterion + "','" + Scaling + "'";
+            cmd += "," + InitBiomass;
             cmd += "," + GrowthRate;
             cmd += "," + CarryingCapacity;
-            for (int i=0;i<m_NumUnusedParameters;++i) {
+            // N.B. Next line will need to be modified once more parameters are used in the ForecastUncertainty calculations
+            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for 4 parameters
                 cmd += ", 0";
             }
             cmd += "," + Harvest + "),";
