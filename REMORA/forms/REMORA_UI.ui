@@ -2056,6 +2056,22 @@
                        </spacer>
                       </item>
                       <item>
+                       <spacer name="horizontalSpacer_34">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>15</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
                        <widget class="QLineEdit" name="MModeRParamLE">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2217,6 +2233,22 @@
                        </spacer>
                       </item>
                       <item>
+                       <spacer name="horizontalSpacer_35">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>15</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
                        <widget class="QLineEdit" name="MModeKParamLE">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2260,7 +2292,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_2">
+                       <widget class="QLabel" name="MModeKPctLB">
                         <property name="font">
                          <font>
                           <weight>50</weight>
@@ -2301,19 +2333,7 @@
                      <enum>QLayout::SetFixedSize</enum>
                     </property>
                     <item>
-                     <widget class="QPushButton" name="MModeHarvestTypePB">
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>20</height>
-                       </size>
-                      </property>
+                     <widget class="QLabel" name="MModeHarvestTypeLBL">
                       <property name="font">
                        <font>
                         <weight>50</weight>
@@ -2321,19 +2341,16 @@
                        </font>
                       </property>
                       <property name="toolTip">
-                       <string>Sets the type of Harvest uncertainty parameter</string>
+                       <string>Harvest Percentage Error (type set by model structure)</string>
                       </property>
                       <property name="statusTip">
-                       <string>Sets the type of Harvest uncertainty parameter</string>
-                      </property>
-                      <property name="whatsThis">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Harvest Uncertainty Selector&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This button allows the user to set the harvest parameter type to either Catch, Effort, or Exploitation. The line graph to the left and bottom will then reflect this type of harvest selection in the plot that allows for harvest data input in the form of a curve defined by multiple line segments.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>Harvest Percentage Error (type set by model structure)</string>
                       </property>
                       <property name="text">
                        <string>Catch</string>
                       </property>
-                      <property name="flat">
-                       <bool>false</bool>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -2390,6 +2407,22 @@
                         <property name="sizeHint" stdset="0">
                          <size>
                           <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_36">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>15</width>
                           <height>20</height>
                          </size>
                         </property>

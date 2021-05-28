@@ -16,7 +16,7 @@ REMORA_UI::REMORA_UI(
     m_ProjectSettingsConfig  = projectSettingsConfig;
     m_ScenarioChanged        = false;
     m_MaxYAxis               = -1.0;
-    m_HarvestType            = "ForecastCatch";
+    m_HarvestType            = "ForecastHarvestCatch";
     m_NumYearsPerRun         = 20;
     m_NumRunsPerForecast     = 10;
     m_IndexMaxYScaleFactor   =  0;
@@ -56,13 +56,16 @@ REMORA_UI::REMORA_UI(
     MModeStochasticRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModeStochasticRB");
     MModePlotTypeSSRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModePlotTypeSSRB");
     MModePlotTypeMSRB        = m_TopLevelWidget->findChild<QRadioButton*>("MModePlotTypeMSRB");
-    MModeHarvestTypePB       = m_TopLevelWidget->findChild<QPushButton* >("MModeHarvestTypePB");
+//  MModeHarvestTypePB       = m_TopLevelWidget->findChild<QPushButton* >("MModeHarvestTypePB");
+    MModeHarvestTypeLBL      = m_TopLevelWidget->findChild<QLabel*      >("MModeHarvestTypeLBL");
     MModePctMSYLBL           = m_TopLevelWidget->findChild<QLabel*      >("MModePctMSYLBL");
     MModeForecastPlotTypeCMB = m_TopLevelWidget->findChild<QComboBox*   >("MModeForecastPlotTypeCMB");
     MModeForecastPlotTypeLB  = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastPlotTypeLB");
     MModeYAxisLockCB         = m_TopLevelWidget->findChild<QCheckBox*   >("MModeYAxisLockCB");
     MModeForecastTypeLB      = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastTypeLB");
     MModePlotTypeLB          = m_TopLevelWidget->findChild<QLabel*      >("MModePlotTypeLB");
+    MModeKParamLB            = m_TopLevelWidget->findChild<QLabel*      >("MModeKParamLB");
+    MModeKPctLB              = m_TopLevelWidget->findChild<QLabel*      >("MModeKPctLB");
 
     MModeDeterministicRB->setChecked(false);
     MModeStochasticRB->setChecked(true);
@@ -75,7 +78,6 @@ REMORA_UI::REMORA_UI(
     MModeRParamDL->setPageStep(1);
     MModeKParamDL->setPageStep(1);
     MModePctMSYDL->setPageStep(1);
-    MModeHarvestTypePB->setEnabled(false); // RSK - disable this temporarily until implemented
 
     // Setting the dials to their default values
     MModePctMSYDL->setValue(110);
@@ -154,6 +156,12 @@ REMORA_UI::~REMORA_UI()
 
 }
 
+void
+REMORA_UI::setProjectSettingsConfig(std::string modelName)
+{
+    m_ProjectSettingsConfig = modelName;
+}
+
 bool
 REMORA_UI::couldShowMSYCB()
 {
@@ -171,16 +179,16 @@ REMORA_UI::drawMultiSpeciesChart()
     int EndYear;
     int NumSpecies;
     int NumObservedYears;
-    int LastCatchYear      = 0;
+    int LastHarvestYear    = 0;
     int YMinSliderVal      = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
-    // int NoUncertaintyRun   = 0;
-    int SpeciesNum         = -1;
-    int Theme              = 0;
+    // int NoUncertaintyRun = 0;
+    int SpeciesNum         =  -1;
+    int Theme              =   0;
     double ScaleVal        = 1.0;
-    double CatchValue;
-    double remTime0Value   = 0;
+    double HarvestValue;
+    double remTime0Value  = 0;
     std::string ChartType = "Line";
     std::string LineStyle = "SolidLine";
     std::string msg;
@@ -197,7 +205,7 @@ REMORA_UI::drawMultiSpeciesChart()
     QStringList ColumnLabelsForLegendMSY;
     QStringList HoverLabels;
     boost::numeric::ublas::matrix<double> ChartLine;
-    boost::numeric::ublas::matrix<double> Catch;
+    boost::numeric::ublas::matrix<double> Harvest;
     std::vector<std::string> SpeNames;
     std::vector<bool> GridLines(true,true);
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomass;
@@ -220,11 +228,13 @@ REMORA_UI::drawMultiSpeciesChart()
 
     if (isFishingMortality) {
         YLabel = "Fishing Mortality (C/Bc)";
-        if (! m_DatabasePtr->getTimeSeriesData(m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
-                                               "","","Catch",NumSpecies,NumObservedYears,Catch)) {
+        if (! m_DatabasePtr->getTimeSeriesData(
+                    m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
+                    QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
+                    NumSpecies,NumObservedYears,Harvest)) {
             return;
         }
-        LastCatchYear = Catch.size1()-1;
+        LastHarvestYear = Harvest.size1()-1;
     } else if (isAbsoluteBiomass) {
         YLabel = "Biomass (metric tons)";
     } else if (isRelativeBiomass) {
@@ -253,14 +263,14 @@ REMORA_UI::drawMultiSpeciesChart()
     for (int species=0; species<NumSpecies; ++species) {
         for (int time=0; time<=NumYearsPerRun; ++time) {
             if (isFishingMortality) {
-                CatchValue = m_MovableLineCharts[species]->getYValue(time) * Catch(LastCatchYear,species);
+                HarvestValue = m_MovableLineCharts[species]->getYValue(time) * Harvest(LastHarvestYear,species);
                 if (nmfUtils::isNearlyZero(ForecastBiomass[0](time,species))) {
                     ChartLine(time,species) = nmfConstantsMSSPM::NoFishingMortality;
 //                  msg = "Found MS Biomass = 0, setting F to 0 for Species: " +
 //                         SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
 //                  m_Logger->logMsg(nmfConstants::Warning,msg);
                 } else {
-                    ChartLine(time,species) = CatchValue/ForecastBiomass[0](time,species);
+                    ChartLine(time,species) = HarvestValue/ForecastBiomass[0](time,species);
                 }
             } else {
                 ChartLine(time,species) = ForecastBiomass[0](time,species)/ScaleVal;
@@ -629,7 +639,7 @@ REMORA_UI::drawSingleSpeciesChart()
     std::vector<boost::numeric::ublas::matrix<double> > ChartLineMultiPlot;
     std::vector<boost::numeric::ublas::matrix<double> > ChartLinesMonteCarloMultiPlot;
     std::vector<boost::numeric::ublas::matrix<double> > ChartLineSpans;
-    boost::numeric::ublas::matrix<double> Catch;
+    boost::numeric::ublas::matrix<double> Harvest;
     std::vector<bool> GridLines(true,true);
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomass;
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomassMonteCarlo;
@@ -651,11 +661,13 @@ REMORA_UI::drawSingleSpeciesChart()
 
     if (isFishingMortality) {
         YLabel = "Fishing Mortality (C/Bc)";
-        if (! m_DatabasePtr->getTimeSeriesData(m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
-                                               "","","Catch",NumSpecies,NumObservedYears,Catch)) {
+        if (! m_DatabasePtr->getTimeSeriesData(
+                    m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
+                    QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
+                    NumSpecies,NumObservedYears,Harvest)) {
             return;
         }
-        LastCatchYear = Catch.size1()-1;
+        LastCatchYear = Harvest.size1()-1;
     } else if (isRelativeBiomass) {
         YLabel = "Relative Biomass";
     }
@@ -702,7 +714,7 @@ REMORA_UI::drawSingleSpeciesChart()
         for (int line=0; line<NumRunsPerForecast; ++line) {
             for (int time=0; time<=NumYearsPerRun; ++time) {
                 if (isFishingMortality) {
-                    CatchValue = m_MovableLineCharts[species/*SpeciesNum*/]->getYValue(time) * Catch(LastCatchYear,species);
+                    CatchValue = m_MovableLineCharts[species/*SpeciesNum*/]->getYValue(time) * Harvest(LastCatchYear,species);
                     if (nmfUtils::isNearlyZero(ForecastBiomassMonteCarlo[line](time,species))) {
                         ChartLinesMonteCarlo(time,line) = nmfConstantsMSSPM::NoFishingMortality;
 //                       msg = "Found Monte Carlo Biomass = 0, setting F to 0 for Species: " +
@@ -737,7 +749,7 @@ REMORA_UI::drawSingleSpeciesChart()
     for (int species=0; species<NumSpecies; ++species) {
             for (int time=0; time<=NumYearsPerRun; ++time) {
                 if (isFishingMortality) {
-                    CatchValue = m_MovableLineCharts[species]->getYValue(time) * Catch(LastCatchYear,species);
+                    CatchValue = m_MovableLineCharts[species]->getYValue(time) * Harvest(LastCatchYear,species);
                     if (nmfUtils::isNearlyZero(ForecastBiomass[0](time,species))) {
                         ChartLine(time,0) = nmfConstantsMSSPM::NoFishingMortality;
 //                      msg = "Found Biomass = 0, setting F to 0 for Species: " +
@@ -1016,6 +1028,14 @@ REMORA_UI::drawSingleSpeciesChart()
     }
 }
 
+void
+REMORA_UI::enableCarryingCapacityWidgets(bool enable)
+{
+    MModeKParamDL->setEnabled(enable);
+    MModeKParamLE->setEnabled(enable);
+    MModeKParamLB->setEnabled(enable);
+    MModeKPctLB->setEnabled(enable);
+}
 
 void
 REMORA_UI::enableWidgets(bool enable)
@@ -1062,7 +1082,7 @@ REMORA_UI::getGrowthUncertainty()
 QString
 REMORA_UI::getHarvestType()
 {
-    return MModeHarvestTypePB->text();
+    return MModeHarvestTypeLBL->text();
 }
 
 QString
@@ -1071,26 +1091,37 @@ REMORA_UI::getHarvestUncertainty()
     return MModeHParamLE->text();
 }
 
-void
+bool
 REMORA_UI::getLastYearsCatchValues(
         int& lastYear,
         std::vector<double>& lastYearsCatchValues)
 {
+    bool retv = true;
     std::vector<std::string> fields;
     std::map<std::string, std::vector<std::string> > dataMap;
     std::string queryStr;
-
+    std::string lastYearHarvestTable = QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString();
     lastYearsCatchValues.clear();
 
     // Get last year's catch data
     fields    = {"Value"};
-    queryStr  = "SELECT Value from Catch where SystemName = '" +
+    queryStr  = "SELECT Value from " + lastYearHarvestTable + " where SystemName = '" +
                  QString::fromStdString(m_ProjectSettingsConfig).split("__")[0].toStdString() + "'";
     queryStr += " AND Year = " + std::to_string(lastYear-1);
+
     dataMap  = m_DatabasePtr->nmfQueryDatabase(queryStr, fields);
-    for (unsigned i=0; i<dataMap["Value"].size(); ++i) {
-        lastYearsCatchValues.push_back(std::stod(dataMap["Value"][i]));
+    int NumRecords = int(dataMap["Value"].size());
+    if (NumRecords > 0) {
+        for (int i=0; i<NumRecords; ++i) {
+            lastYearsCatchValues.push_back(std::stod(dataMap["Value"][i]));
+        }
+    } else {
+        std::string msg = "No entries found in table: " + lastYearHarvestTable;
+        m_Logger->logMsg(nmfConstants::Error,msg);
+        m_Logger->logMsg(nmfConstants::Error,queryStr);
+        retv = false;
     }
+    return retv;
 }
 
 int
@@ -1468,7 +1499,7 @@ REMORA_UI::saveForecastScenario(QString filename)
     return retv;
 }
 
-void
+bool
 REMORA_UI::saveHarvestData()
 {
     int NumYears = 0;
@@ -1492,7 +1523,7 @@ REMORA_UI::saveHarvestData()
                 CompetitionForm,nmfConstantsMSSPM::DontShowPopupError);
     if (! systemFound) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: No systems found");
-        return;
+        return false;
     }
 
     getYearRange(startYear,endYear);
@@ -1507,20 +1538,21 @@ REMORA_UI::saveHarvestData()
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: DELETE error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QMessageBox::warning(m_TopLevelWidget, "Error",
-                             "\nError in Save command.  Couldn't delete all records from" +
+                             "\nError in Save command.  Couldn't delete all records from " +
                              QString::fromStdString(m_HarvestType) + " table.\n",
                              QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
-        return;
+        return false;
     }
 
-    getLastYearsCatchValues(NumYears,lastYearsCatchValues);
-
+    bool ok = getLastYearsCatchValues(NumYears,lastYearsCatchValues);
+    if (! ok) {
+        return false;
+    }
     cmd = "INSERT INTO " + m_HarvestType + " (ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,SpeName,Year,Value) VALUES ";
     for (unsigned speciesNum=0; speciesNum<SpeNames.size(); ++speciesNum) { // Species
 
         for (int yearNum=0; yearNum<=NumYearsInForecast; ++yearNum) { // Time
-
             finalValue = getScaleValueFromPlot(speciesNum,yearNum) * lastYearsCatchValues[speciesNum];
 
             cmd += "('" + m_ForecastName +
@@ -1530,19 +1562,23 @@ REMORA_UI::saveHarvestData()
                     ", " + std::to_string(finalValue) + "),";
         }
     }
+
     cmd = cmd.substr(0,cmd.size()-1);
+
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: Write table error: " + errorMsg);
         m_Logger->logMsg(nmfConstants::Error,"cmd: " + cmd);
         QApplication::restoreOverrideCursor();
-        return;
+        return false;
     }
+    return true;
 }
 
 void
 REMORA_UI::saveOutputBiomassData()
 {
+//std::cout << "REMORA forecastName: " << m_ForecastName << std::endl;
     emit SaveOutputBiomassData(m_ForecastName);
 }
 
@@ -1592,10 +1628,10 @@ REMORA_UI::saveUncertaintyParameters()
         return;
     }
 
-    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity",
-                                  "Predation","Competition",
-                                  "BetaSpecies","BetaGuilds","Handling",
-                                  "Exponent","Catchability","Harvest"};
+    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity","Catchability",
+                                  "CompetitionAlpha","CompetitionBetaSpecies","CompetitionBetaGuilds","CompetitionBetaGuildsGuilds",
+                                  "PredationRho","PredationHandling","PredationExponent","SurveyQ",
+                                  "Harvest"};
     cmd  = "INSERT INTO ForecastUncertainty (" ;
     cmd += "SpeName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
     cmd +=  ParameterNames.join(",").toStdString();
@@ -1607,7 +1643,7 @@ REMORA_UI::saveUncertaintyParameters()
             cmd += "," + GrowthRate;
             cmd += "," + CarryingCapacity;
             // N.B. Next line will need to be modified once more parameters are used in the ForecastUncertainty calculations
-            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for 4 parameters
+            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for 3 parameters + Harvest
                 cmd += ", 0";
             }
             cmd += "," + Harvest + "),";
@@ -1696,14 +1732,8 @@ REMORA_UI::setForecastPlotType(QString arg1)
 void
 REMORA_UI::setHarvestType(QString arg1)
 {
-    MModeHarvestTypePB->setText(arg1);
-    if (arg1 == "Catch") {
-        m_HarvestType = "ForecastCatch";
-    } else if (arg1 == "Effort (E)") {
-        m_HarvestType = "ForecastEffort";
-    } else if (arg1 == "Exploitation (F)") {
-        m_HarvestType = "ForecastExploitation";
-    }
+    MModeHarvestTypeLBL->setText(arg1);
+    m_HarvestType = "ForecastHarvest" + arg1.split(" ")[0].toStdString();
 }
 
 void
@@ -1861,8 +1891,8 @@ REMORA_UI::setupConnections()
             this,                     SLOT(callback_SingleSpeciesRB(bool)));
     connect(MModePlotTypeMSRB,        SIGNAL(clicked(bool)),
             this,                     SLOT(callback_MultiSpeciesRB(bool)));
-    connect(MModeHarvestTypePB,       SIGNAL(clicked()),
-            this,                     SLOT(callback_UncertaintyHarvestParameterPB()));
+//  connect(MModeHarvestTypePB,       SIGNAL(clicked()),
+//          this,                     SLOT(callback_UncertaintyHarvestParameterPB()));
     connect(MModeSpeciesCMB,          SIGNAL(currentIndexChanged(QString)),
             this,                     SLOT(callback_SpeciesCMB(QString)));
     connect(MModeMultiPlotTypePB,     SIGNAL(clicked()),
@@ -2142,12 +2172,20 @@ REMORA_UI::callback_PctMSYDL(int value)
 void
 REMORA_UI::callback_RunPB()
 {
+    bool ok;
+    QString msg;
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     updateYearlyScaleFactorPoints();
     saveForecastParameters();
     saveUncertaintyParameters();
-    saveHarvestData();
+    ok = saveHarvestData();
+    if (! ok) {
+        QApplication::restoreOverrideCursor();
+        msg = "\nREMORA run failed. Please check log for error messages.\n";
+        QMessageBox::warning(m_TopLevelWidget, "Warning", msg, QMessageBox::Ok);
+        return;
+    }
     saveOutputBiomassData();
     drawPlot();
 
@@ -2248,23 +2286,23 @@ REMORA_UI::callback_UncertaintyHarvestParameterDL(int value)
     setScenarioChanged(true);
 }
 
-void
-REMORA_UI::callback_UncertaintyHarvestParameterPB()
-{
-    QString harvestType = getHarvestType();
-
-    if (harvestType == "Catch") {
-        MModeHarvestTypePB->setText("Effort (E)");
-        m_HarvestType = "ForecastCatch";
-    } else if (harvestType == "Effort (E)") {
-        MModeHarvestTypePB->setText("Exploitation (F)");
-        m_HarvestType = "ForecastEffort";
-    } else if (harvestType == "Exploitation (F)") {
-        MModeHarvestTypePB->setText("Catch");
-        m_HarvestType = "ForecastExploitation";
-    }
-    setScenarioChanged(true);
-}
+//void
+//REMORA_UI::callback_UncertaintyHarvestParameterPB()
+//{
+//    QString harvestType = getHarvestType();
+//    if (harvestType == "Catch") {
+//        MModeHarvestTypePB->setText("Effort (E)");
+//        m_HarvestType = "ForecastHarvestEffort";
+//    } else if (harvestType == "Effort (E)") {
+//        MModeHarvestTypePB->setText("Exploitation (F)");
+//        m_HarvestType = "ForecastHarvestExploitation";
+//    } else if (harvestType == "Exploitation (F)") {
+//        MModeHarvestTypePB->setText("Catch");
+//        m_HarvestType = "ForecastHarvestCatch";
+//    }
+//std::cout << "m_HarvestType: " << m_HarvestType << std::endl;
+//    setScenarioChanged(true);
+//}
 
 void
 REMORA_UI::callback_UncertaintyKParameterDL(int value)

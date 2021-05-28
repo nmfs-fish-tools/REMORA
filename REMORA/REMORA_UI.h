@@ -38,6 +38,7 @@
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QLineSeries>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
@@ -77,7 +78,10 @@ private:
     QLabel*       MModeForecastTypeLB;
     QLabel*       MModePlotTypeLB;
     QLabel*       MModePctMSYLBL;
+    QLabel*       MModeKParamLB;
+    QLabel*       MModeKPctLB;
     QLabel*       MModeSpeciesLB;
+    QLabel*       MModeHarvestTypeLBL;
     QLineEdit*    MModeScenarioNameLE;
     QLineEdit*    MModeYearsPerRunLE;
     QLineEdit*    MModeRunsPerForecastLE;
@@ -89,7 +93,7 @@ private:
     QPushButton*  MModeForecastDelPB;
     QPushButton*  MModeForecastLoadPB;
     QPushButton*  MModeForecastSavePB;
-    QPushButton*  MModeHarvestTypePB;
+//  QPushButton*  MModeHarvestTypePB;
     QPushButton*  MModeMultiPlotTypePB;
     QPushButton*  MModeMaxScaleFactorPB;
     QRadioButton* MModeDeterministicRB;
@@ -173,7 +177,7 @@ private:
     QString getGrowthUncertainty();
     QString getHarvestType();
     QString getHarvestUncertainty();
-    void getLastYearsCatchValues(
+    bool getLastYearsCatchValues(
             int& lastYear,
             std::vector<double>& lastYearsCatchValues);
     int getMaxYScaleFactor(const int& speciesNum);
@@ -207,13 +211,12 @@ private:
     void resetYearsPerRunOnScaleFactorPlot();
     void saveForecastParameters();
     bool saveForecastScenario(QString filename);
-    void saveHarvestData();
+    bool saveHarvestData();
     void saveOutputBiomassData();
     void saveUncertaintyParameters();
     void setAScaleFactorPoint(QString arg1);
     void setDeterministic(QString arg1);
     void setForecastPlotType(QString arg1);
-    void setHarvestType(QString arg1);
     void setMaxYScaleFactor(QString maxY);
     void setNumRunsPerForecast(QString numRuns);
     void setNumYearsPerRun(QString numYears);
@@ -284,6 +287,9 @@ public:
             std::string& ProjectSettingsConfig,
             QStringList& SpeciesList);
     ~REMORA_UI();
+
+    void setProjectSettingsConfig(std::string modelName);
+
     /**
      * @brief getScaleValueFromPlot : returns harvest scale value for the passed in species and year
      * @param species : species number from the list of species
@@ -326,6 +332,7 @@ public:
      * @param speciesList : current list of species in model
      */
     void setSpeciesList(const QStringList& speciesList);
+    void setHarvestType(QString arg1);
 
 
 public Q_SLOTS:
@@ -431,11 +438,11 @@ public Q_SLOTS:
      * @param value : current value of the Harvest Uncertainty dial
      */
     void callback_UncertaintyHarvestParameterDL(int value);
-    /**
-     * @brief Callback invoked when the user presses the Harvest Uncertainty parameter toggle
-     * button
-     */
-    void callback_UncertaintyHarvestParameterPB();
+//    /**
+//     * @brief Callback invoked when the user presses the Harvest Uncertainty parameter toggle
+//     * button
+//     */
+//    void callback_UncertaintyHarvestParameterPB();
     /**
      * @brief Callback invoked when the user modifies the Carrying Capacity Uncertainty dial
      * @param value : current value of the Carrying Capacity Uncertainty dial
@@ -458,6 +465,8 @@ public Q_SLOTS:
      * @param value : current value of the Years per Run slider
      */
     void callback_YearsPerRunSL(int value);
+    void enableCarryingCapacityWidgets(bool enable);
+
 };
 
 #endif // MSSPM_GUIMANAGERMODE_H
