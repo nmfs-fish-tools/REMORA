@@ -1734,6 +1734,12 @@ REMORA_UI::setDeterministic(QString isChecked)
    MModeStochasticRB->setChecked(   isChecked == "0");
 }
 
+std::string
+REMORA_UI::getForecastName()
+{
+    return m_ForecastName;
+}
+
 void
 REMORA_UI::setForecastName(QString forecastName)
 {

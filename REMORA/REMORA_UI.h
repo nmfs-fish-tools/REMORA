@@ -294,6 +294,7 @@ public:
     ~REMORA_UI();
 
     void setProjectSettingsConfig(std::string modelName);
+    std::string getForecastName();
 
     /**
      * @brief getScaleValueFromPlot : returns harvest scale value for the passed in species and year
