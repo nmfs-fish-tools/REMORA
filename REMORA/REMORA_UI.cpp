@@ -213,7 +213,7 @@ REMORA_UI::drawMultiSpeciesChart()
     boost::numeric::ublas::matrix<double> ChartLine;
     boost::numeric::ublas::matrix<double> Harvest;
     std::vector<std::string> SpeNames;
-    std::vector<bool> GridLines(true,true);
+    std::vector<bool> GridLines = {true,true};
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomass;
     QList<QColor> LineColors;
 
@@ -233,7 +233,7 @@ REMORA_UI::drawMultiSpeciesChart()
     NumSpecies = SpeNames.size();
 
     if (isFishingMortality) {
-        YLabel = "Fishing Mortality (C/Bc)";
+        YLabel = nmfConstantsMSSPM::OutputChartExploitationCatchTitle.toStdString();
         if (! m_DatabasePtr->getTimeSeriesData(
                     m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
                     QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
@@ -357,7 +357,7 @@ REMORA_UI::drawMSYLines()
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
     std::string XLabel    = "Year";
-    std::string YLabel    = "Biomass (metric tons)";
+    std::string YLabel    = "Biomass ("+ getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() +"metric tons)";
     std::string MainTitle = "Forecast Run for Species: ";
     std::string Algorithm;
     std::string Minimizer;
@@ -499,10 +499,10 @@ REMORA_UI::drawMSYLines(
         const bool& ShowLegend,
         const double& Pct)
 {
-    bool isFishingMortality = (getForecastPlotType() == "Fishing Mortality");
+    bool isFishingMortality = (getForecastPlotType() == nmfConstantsMSSPM::OutputChartExploitation);
     int Theme = 0;
     double MSYValue;
-    double ScaleVal = 1.0;
+    double ScaleVal = getPlotScaleFactor(); // 1.0
     std::string queryStr;
     std::string LineStyle    = "DashedLine";
     std::string ChartType    = "Line";
@@ -510,7 +510,7 @@ REMORA_UI::drawMSYLines(
     boost::numeric::ublas::matrix<double> ChartMSYData;
     std::map<std::string, std::vector<std::string> > dataMap;
     std::vector<std::string> fields;
-    std::vector<bool> GridLines(true,true);
+    std::vector<bool> GridLines = {true,true};
     QColor LineColor = QColor(nmfConstants::LineColors[0].c_str());
 
     if (Pct != 1.0) {
@@ -646,7 +646,7 @@ REMORA_UI::drawSingleSpeciesChart()
     std::vector<boost::numeric::ublas::matrix<double> > ChartLinesMonteCarloMultiPlot;
     std::vector<boost::numeric::ublas::matrix<double> > ChartLineSpans;
     boost::numeric::ublas::matrix<double> Harvest;
-    std::vector<bool> GridLines(true,true);
+    std::vector<bool> GridLines = {true,true};
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomass;
     std::vector<boost::numeric::ublas::matrix<double> > ForecastBiomassMonteCarlo;
     std::vector<std::string> SpeNames;
@@ -666,7 +666,7 @@ REMORA_UI::drawSingleSpeciesChart()
     NumObservedYears = EndYear-StartYear;
 
     if (isFishingMortality) {
-        YLabel = "Fishing Mortality (C/Bc)";
+        YLabel = nmfConstantsMSSPM::OutputChartExploitationCatchTitle.toStdString();
         if (! m_DatabasePtr->getTimeSeriesData(
                     m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
                     QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
@@ -727,7 +727,7 @@ REMORA_UI::drawSingleSpeciesChart()
 //                              SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
 //                       m_Logger->logMsg(nmfConstants::Warning,msg);
                     } else {
-                        ChartLinesMonteCarlo(time,line) = CatchValue/ForecastBiomassMonteCarlo[line](time,species);
+                        ChartLinesMonteCarlo(time,line) = CatchValue/(ForecastBiomassMonteCarlo[line](time,species)/ScaleVal);
                     }
                 } else {
                     ChartLinesMonteCarlo(time,line) = ForecastBiomassMonteCarlo[line](time,species)/ScaleVal;
@@ -762,7 +762,7 @@ REMORA_UI::drawSingleSpeciesChart()
 //                             SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
 //                      m_Logger->logMsg(nmfConstants::Warning,msg);
                     } else {
-                        ChartLine(time,0) = CatchValue/ForecastBiomass[0](time,species);
+                        ChartLine(time,0) = CatchValue/(ForecastBiomass[0](time,species)/ScaleVal);
                     }
                 } else {
                     ChartLine(time,0) = ForecastBiomass[0](time,species)/ScaleVal;
@@ -830,6 +830,8 @@ REMORA_UI::drawSingleSpeciesChart()
         }
         //YLabelMultiPlot = (isFishingMortality) ? "F Mortality (C/Bc)" : "Biomass (mt)";
         for (QChart* chart : m_Charts) {
+            // This will set a chart background to a color. Revisit this logic if want to change the dark settings for a chart
+            //chart->setBackgroundBrush(QBrush(QColor(100,100,100)));
 
             QMargins chartMargins(8, 10, 20, 10);
             m_ChartWidget->setMargins(chartMargins);
@@ -1315,7 +1317,7 @@ REMORA_UI::isDeterministic()
 bool
 REMORA_UI::isFishingMortalityPlotType()
 {
-    return (MModeForecastPlotTypeCMB->currentText() == "Fishing Mortality");
+    return (MModeForecastPlotTypeCMB->currentText() == nmfConstantsMSSPM::OutputChartExploitation);
 }
 
 bool
@@ -2099,10 +2101,10 @@ REMORA_UI::callback_ForecastPlotTypeCMB(QString type)
     bool showMSYCheckboxes  = couldShowMSYCB();
     bool isBiomassAbsolute  = (type == "Biomass (absolute)");
     bool isBiomassRelative  = (type == "Biomass (relative)");
-    bool isFishingMortality = (type == "Fishing Mortality");
+    bool isFishingMortality = (type == nmfConstantsMSSPM::OutputChartExploitation);
 
-    MModePlotScaleFactorCMB->setEnabled(isBiomassAbsolute);
-    MModePlotScaleFactorLBL->setEnabled(isBiomassAbsolute);
+    MModePlotScaleFactorCMB->setEnabled(isBiomassAbsolute | isFishingMortality);
+    MModePlotScaleFactorLBL->setEnabled(isBiomassAbsolute | isFishingMortality);
     if (isBiomassAbsolute) {
         MModeShowMSYCB->setEnabled(showMSYCheckboxes);
         MModePctMSYCB->setEnabled(showMSYCheckboxes);
