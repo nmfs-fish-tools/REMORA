@@ -425,7 +425,7 @@ REMORA_UI::drawMSYLines()
     } else if (isMultiPlot()) {
         SpeciesNum =  0;
         if (isAbsoluteBiomassPlotType()) {
-            YLabel = "Biomass (mt)";
+            YLabel = "Biomass ("+getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() + "mt)";
         } else if (isRelativeBiomassPlotType()) {
             YLabel = "Rel Biomass";
         } else if (isFishingMortalityPlotType()) {
@@ -727,7 +727,7 @@ REMORA_UI::drawSingleSpeciesChart()
 //                              SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
 //                       m_Logger->logMsg(nmfConstants::Warning,msg);
                     } else {
-                        ChartLinesMonteCarlo(time,line) = CatchValue/(ForecastBiomassMonteCarlo[line](time,species)/ScaleVal);
+                        ChartLinesMonteCarlo(time,line) = CatchValue/(ForecastBiomassMonteCarlo[line](time,species));
                     }
                 } else {
                     ChartLinesMonteCarlo(time,line) = ForecastBiomassMonteCarlo[line](time,species)/ScaleVal;
@@ -762,7 +762,7 @@ REMORA_UI::drawSingleSpeciesChart()
 //                             SpeNames[species] + " at Year = " + std::to_string(time+StartForecastYear);
 //                      m_Logger->logMsg(nmfConstants::Warning,msg);
                     } else {
-                        ChartLine(time,0) = CatchValue/(ForecastBiomass[0](time,species)/ScaleVal);
+                        ChartLine(time,0) = CatchValue/(ForecastBiomass[0](time,species));
                     }
                 } else {
                     ChartLine(time,0) = ForecastBiomass[0](time,species)/ScaleVal;
@@ -824,11 +824,10 @@ REMORA_UI::drawSingleSpeciesChart()
         if (isFishingMortality) {
             YLabelMultiPlot = "F Mortality (C/Bc)";
         } else if (isAbsoluteBiomass) {
-            YLabelMultiPlot = "Biomass (mt)";
+            YLabelMultiPlot = "Biomass ("+getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() + "mt)";
         } else if (isRelativeBiomass) {
             YLabelMultiPlot = "Rel Biomass";
         }
-        //YLabelMultiPlot = (isFishingMortality) ? "F Mortality (C/Bc)" : "Biomass (mt)";
         for (QChart* chart : m_Charts) {
             // This will set a chart background to a color. Revisit this logic if want to change the dark settings for a chart
             //chart->setBackgroundBrush(QBrush(QColor(100,100,100)));
@@ -2103,8 +2102,8 @@ REMORA_UI::callback_ForecastPlotTypeCMB(QString type)
     bool isBiomassRelative  = (type == "Biomass (relative)");
     bool isFishingMortality = (type == nmfConstantsMSSPM::OutputChartExploitation);
 
-    MModePlotScaleFactorCMB->setEnabled(isBiomassAbsolute | isFishingMortality);
-    MModePlotScaleFactorLBL->setEnabled(isBiomassAbsolute | isFishingMortality);
+    MModePlotScaleFactorCMB->setEnabled(isBiomassAbsolute);
+    MModePlotScaleFactorLBL->setEnabled(isBiomassAbsolute);
     if (isBiomassAbsolute) {
         MModeShowMSYCB->setEnabled(showMSYCheckboxes);
         MModePctMSYCB->setEnabled(showMSYCheckboxes);
