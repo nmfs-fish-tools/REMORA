@@ -129,7 +129,8 @@ private:
     std::string           m_ForecastName;
     std::string           m_HarvestType;
     std::string           m_ProjectDir;
-    std::string           m_ProjectSettingsConfig;
+    std::string           m_ProjectName;
+    std::string           m_ModelName;
     std::vector<int>      m_MaxYAxisValues;
     std::vector<nmfChartMovableLine *> m_MovableLineCharts;
     QChart*               m_ChartWidget;
@@ -274,13 +275,13 @@ signals:
 
 public:
 
-//    REMORA_UI(QWidget* parent);
     /**
      * @brief Class definition for REMORA Management Tool
      * @param DatabasePtr : pointer to database
      * @param Logger : pointer to logger
      * @param ProjectDir : project directory
-     * @param ProjectSettingsConfig : project settings configuration name
+     * @param ProjectName : project name
+     * @param ModelName : model name
      * @param SpeciesList : list of species
      * @param MModeWidget : parent widget in which to place this class
      */
@@ -289,11 +290,12 @@ public:
             nmfDatabase* DatabasePtr,
             nmfLogger*   Logger,
             std::string& ProjectDir,
-            std::string& ProjectSettingsConfig,
+            std::string& ProjectName,
+            std::string& ModelName,
             QStringList& SpeciesList);
     ~REMORA_UI();
 
-    void setProjectSettingsConfig(std::string modelName);
+    void setModelName(std::string modelName);
     std::string getForecastName();
 
     /**

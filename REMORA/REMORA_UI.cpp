@@ -7,13 +7,15 @@ REMORA_UI::REMORA_UI(
         nmfDatabase* databasePtr,
         nmfLogger*   logger,
         std::string& projectDir,
-        std::string& projectSettingsConfig,
+        std::string& projectName,
+        std::string& modelName,
         QStringList& SpeciesList)
 {
     m_DatabasePtr            = databasePtr;
     m_Logger                 = logger;
     m_ProjectDir             = projectDir;
-    m_ProjectSettingsConfig  = projectSettingsConfig;
+    m_ProjectName            = projectName;
+    m_ModelName              = modelName;
     m_ScenarioChanged        = false;
     m_MaxYAxis               = -1.0;
     m_HarvestType            = "ForecastHarvestCatch";
@@ -71,7 +73,6 @@ REMORA_UI::REMORA_UI(
     MModePlotScaleFactorLBL->setStatusTip("Sets the scale of y-axis");
     MModeKParamLB            = m_TopLevelWidget->findChild<QLabel*      >("MModeKParamLB");
     MModeKPctLB              = m_TopLevelWidget->findChild<QLabel*      >("MModeKPctLB");
-
 
     MModeDeterministicRB->setChecked(false);
     MModeStochasticRB->setChecked(true);
@@ -163,9 +164,9 @@ REMORA_UI::~REMORA_UI()
 }
 
 void
-REMORA_UI::setProjectSettingsConfig(std::string modelName)
+REMORA_UI::setModelName(std::string modelName)
 {
-    m_ProjectSettingsConfig = modelName;
+    m_ModelName = modelName;
 }
 
 bool
@@ -235,7 +236,7 @@ REMORA_UI::drawMultiSpeciesChart()
     if (isFishingMortality) {
         YLabel = nmfConstantsMSSPM::OutputChartExploitationCatchTitle.toStdString();
         if (! m_DatabasePtr->getTimeSeriesData(
-                    m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
+                    m_TopLevelWidget,m_Logger,m_ProjectName,m_ModelName,"",
                     QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
                     NumSpecies,NumObservedYears,Harvest)) {
             return;
@@ -251,14 +252,14 @@ REMORA_UI::drawMultiSpeciesChart()
     ChartLine.clear();
 
     if (! m_DatabasePtr->getForecastInfo(
-         TableName,m_ForecastName,NumYearsPerRun,StartForecastYear,
+         TableName,m_ProjectName,m_ForecastName,NumYearsPerRun,StartForecastYear,
          Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
         return;
     }
 
     // Plot ForecastBiomass data
     if (! m_DatabasePtr->getForecastBiomass(
-                m_TopLevelWidget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ProjectName,m_ForecastName,
                 NumSpecies,NumYearsPerRun,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomass)) {
@@ -379,7 +380,7 @@ REMORA_UI::drawMSYLines()
     MainTitle += SpeNames[SpeciesNum];
 
     if (! m_DatabasePtr->getForecastInfo(
-                TableName,m_ForecastName,NumYearsPerRun,StartForecastYear,
+                TableName,m_ProjectName,m_ForecastName,NumYearsPerRun,StartForecastYear,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
         return;
     }
@@ -668,7 +669,7 @@ REMORA_UI::drawSingleSpeciesChart()
     if (isFishingMortality) {
         YLabel = nmfConstantsMSSPM::OutputChartExploitationCatchTitle.toStdString();
         if (! m_DatabasePtr->getTimeSeriesData(
-                    m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,"","",
+                    m_TopLevelWidget,m_Logger,m_ProjectName,m_ModelName,"",
                     QString::fromStdString(m_HarvestType).replace("Forecast","").toStdString(),
                     NumSpecies,NumObservedYears,Harvest)) {
             return;
@@ -679,13 +680,13 @@ REMORA_UI::drawSingleSpeciesChart()
     }
 
     if (! m_DatabasePtr->getForecastInfo(
-         TableName,m_ForecastName,NumYearsPerRun,StartForecastYear,
+         TableName,m_ProjectName,m_ForecastName,NumYearsPerRun,StartForecastYear,
          Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
         return;
     }
 
     if (! m_DatabasePtr->getForecastBiomassMonteCarlo(
-                m_TopLevelWidget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ProjectName,m_ForecastName,
                 NumSpecies,NumYearsPerRun,NumRunsPerForecast,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomassMonteCarlo)) {
@@ -694,7 +695,7 @@ REMORA_UI::drawSingleSpeciesChart()
 
     // Plot ForecastBiomass data
     if (! m_DatabasePtr->getForecastBiomass(
-                m_TopLevelWidget,m_Logger,m_ForecastName,
+                m_TopLevelWidget,m_Logger,m_ProjectName,m_ForecastName,
                 NumSpecies,NumYearsPerRun,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 ForecastBiomass)) {
@@ -703,7 +704,7 @@ REMORA_UI::drawSingleSpeciesChart()
 
     std::string currentSpecies = getCurrentSpecies();
     if (! m_DatabasePtr->getForecastMonteCarloParameters(
-                m_TopLevelWidget,m_Logger,currentSpecies,m_ForecastName,
+                m_TopLevelWidget,m_Logger,currentSpecies,m_ProjectName,m_ForecastName,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 HoverData)) {
         return;
@@ -1114,8 +1115,8 @@ REMORA_UI::getLastYearsCatchValues(
 
     // Get last year's catch data
     fields    = {"Value"};
-    queryStr  = "SELECT Value from " + lastYearHarvestTable + " where SystemName = '" +
-                 QString::fromStdString(m_ProjectSettingsConfig).split("__")[0].toStdString() + "'";
+    queryStr  = "SELECT Value from " + lastYearHarvestTable + " where ProjectName = '" +
+                 m_ProjectName + "' AND ModelName = '" + m_ModelName + "'";
     queryStr += " AND Year = " + std::to_string(lastYear-1);
 
     dataMap  = m_DatabasePtr->nmfQueryDatabase(queryStr, fields);
@@ -1274,8 +1275,8 @@ REMORA_UI::getYearRange(int& firstYear, int& lastYear)
     std::string queryStr;
 
     fields   = {"StartYear","RunLength"};
-    queryStr = "SELECT StartYear,RunLength from Systems where SystemName = '" +
-            QString::fromStdString(m_ProjectSettingsConfig).split("__")[0].toStdString() + "'";
+    queryStr = "SELECT StartYear,RunLength from Models where ProjectName = '" + m_ProjectName +
+               "' AND ModelName = '" + m_ModelName + "'";
     dataMap  = m_DatabasePtr->nmfQueryDatabase(queryStr, fields);
     if (dataMap["RunLength"].size() != 0) {
         StartYear = std::stoi(dataMap["StartYear"][0]);
@@ -1484,7 +1485,7 @@ REMORA_UI::saveForecastParameters()
             ", RunLength = " + std::to_string(getNumYearsPerRun()) +
             ", EndYear = " + std::to_string(endForecastYear) +
             ", IsDeterministic = " + std::to_string(isDeterministic()) +
-            "  WHERE ForecastName = '" + m_ProjectSettingsConfig + "'";
+            "  WHERE ProjectName = '" + m_ProjectName + "' AND ForecastName = '" + m_ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"[Error 1] REMORA: DELETE error: " + errorMsg);
@@ -1561,12 +1562,12 @@ REMORA_UI::saveHarvestData()
     std::string CompetitionForm;
     std::vector<double> lastYearsCatchValues;
 
-    bool systemFound = m_DatabasePtr->getAlgorithmIdentifiers(
-                m_TopLevelWidget,m_Logger,m_ProjectSettingsConfig,
+    bool modelFound = m_DatabasePtr->getAlgorithmIdentifiers(
+                m_TopLevelWidget,m_Logger,m_ProjectName,m_ModelName,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                 CompetitionForm,nmfConstantsMSSPM::DontShowPopupError);
-    if (! systemFound) {
-        m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: No systems found");
+    if (! modelFound) {
+        m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: No models found");
         return false;
     }
 
@@ -1575,8 +1576,8 @@ REMORA_UI::saveHarvestData()
 
     m_DatabasePtr->getAllSpecies(m_Logger,SpeNames);
 
-    cmd = "DELETE FROM " + m_HarvestType + " WHERE ForecastName = '" +
-           m_ForecastName + "'";
+    cmd = "DELETE FROM " + m_HarvestType + " WHERE ProjectName = '" + m_ProjectName +
+          "' AND ForecastName = '" + m_ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::saveHarvestData: DELETE error: " + errorMsg);
@@ -1593,13 +1594,13 @@ REMORA_UI::saveHarvestData()
     if (! ok) {
         return false;
     }
-    cmd = "INSERT INTO " + m_HarvestType + " (ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,SpeName,Year,Value) VALUES ";
+    cmd = "INSERT INTO " + m_HarvestType + " (ProjectName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,SpeName,Year,Value) VALUES ";
     for (unsigned speciesNum=0; speciesNum<SpeNames.size(); ++speciesNum) { // Species
 
         for (int yearNum=0; yearNum<=NumYearsInForecast; ++yearNum) { // Time
             finalValue = getScaleValueFromPlot(speciesNum,yearNum) * lastYearsCatchValues[speciesNum];
 
-            cmd += "('" + m_ForecastName +
+            cmd += "('" + m_ProjectName + "','" + m_ForecastName +
                     "','" + Algorithm + "','" + Minimizer +
                     "','" + ObjectiveCriterion + "','" + Scaling +
                     "','" + SpeNames[speciesNum] + "'," + std::to_string(yearNum) +
@@ -1641,7 +1642,7 @@ REMORA_UI::saveUncertaintyParameters()
     std::string ForecastName =  m_ForecastName;
     std::vector<std::string> fields = {"ForecastName","Algorithm","Minimizer","ObjectiveCriterion","Scaling"};
     std::string queryStr = "SELECT ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling FROM Forecasts where ";
-    queryStr += "ForecastName = '" + ForecastName + "'";
+    queryStr += "ProjectName = '" + m_ProjectName + "' AND ForecastName = '" + ForecastName + "'";
     std::map<std::string, std::vector<std::string> > dataMap = m_DatabasePtr->nmfQueryDatabase(queryStr, fields);
 
     int NumRecords = dataMap["ForecastName"].size();
@@ -1661,7 +1662,8 @@ REMORA_UI::saveUncertaintyParameters()
     std::string Harvest            = std::to_string(MModeHParamLE->text().toDouble()/100.0);
 
     // Clear previous entry in ForecastUncertainty table
-    cmd = "DELETE FROM ForecastUncertainty WHERE ForecastName = '" + ForecastName + "'";
+    cmd = "DELETE FROM ForecastUncertainty WHERE ProjectName = '" + m_ProjectName +
+          "' AND ForecastName = '" + ForecastName + "'";
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
     if (nmfUtilsQt::isAnError(errorMsg)) {
         m_Logger->logMsg(nmfConstants::Error,"REMORA::callback_SavePB: DELETE error: " + errorMsg);
@@ -1677,11 +1679,11 @@ REMORA_UI::saveUncertaintyParameters()
                                   "PredationRho","PredationHandling","PredationExponent","SurveyQ",
                                   "Harvest"};
     cmd  = "INSERT INTO ForecastUncertainty (" ;
-    cmd += "SpeName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
+    cmd += "SpeName,ProjectName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
     cmd +=  ParameterNames.join(",").toStdString();
     cmd += ") VALUES ";
     for (unsigned i = 0; i < SpeNames.size(); ++i) { // Species
-            cmd += "('" + SpeNames[i] + "','" + ForecastName + "','" + Algorithm +
+            cmd += "('" + SpeNames[i] + "','" + m_ProjectName + "','" + ForecastName + "','" + Algorithm +
                     "','" + Minimizer + "','" + ObjectiveCriterion + "','" + Scaling + "'";
             cmd += "," + InitBiomass;
             cmd += "," + GrowthRate;
