@@ -187,13 +187,13 @@ REMORA_UI::drawMultiSpeciesChart()
     int NumSpecies;
     int NumObservedYears;
     int LastHarvestYear    = 0;
-    int YMinSliderVal      = 0;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
-    // int NoUncertaintyRun = 0;
     int SpeciesNum         =  -1;
     int Theme              =   0;
-    double ScaleVal        = getPlotScaleFactor();
+    double YMinVal  = 0;
+    double YMaxVal  = nmfConstants::NoValueDouble;
+    double ScaleVal = getPlotScaleFactor();
     double HarvestValue;
     double remTime0Value  = 0;
     std::string ChartType = "Line";
@@ -309,7 +309,7 @@ REMORA_UI::drawMultiSpeciesChart()
                 nmfConstants::ShowLegend,
                 StartForecastYear,
                 nmfConstantsMSSPM::LabelXAxisAsInts,
-                YMinSliderVal,
+                YMinVal,YMaxVal,
                 nmfConstantsMSSPM::LeaveGapsWhereNegative,
                 ChartLine,
                 RowLabelsForBars,
@@ -328,8 +328,7 @@ REMORA_UI::drawMultiSpeciesChart()
     removeMSYLines(m_ChartWidget,{"MSY = % of r/2","MSY = % of K/2"});
     if (isMSYBoxChecked()) {
         drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
-                     // NumRunsPerForecast,NoUncertaintyRun,
-                     StartForecastYear,YMinSliderVal,
+                     StartForecastYear,YMinVal,YMaxVal,
                      Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                      RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                      MainTitle,XLabel,YLabel,nmfConstants::ShowLegend,1.0);
@@ -337,7 +336,7 @@ REMORA_UI::drawMultiSpeciesChart()
     if (isPctMSYBoxChecked()) {
         drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
                      // NumRunsPerForecast,NoUncertaintyRun,
-                     StartForecastYear,YMinSliderVal,
+                     StartForecastYear,YMinVal,YMaxVal,
                      Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                      RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                      MainTitle,XLabel,YLabel,nmfConstants::ShowLegend,getPctMSYValue());
@@ -352,14 +351,14 @@ REMORA_UI::drawMSYLines()
     int EndYear;
     int NumSpecies;
     int StartForecastYear;
-    int YMinSliderVal      = 0;
-    // int NoUncertaintyRun   = 0;
+    double YMinVal         = 0;
+    double YMaxVal         = nmfConstants::NoValueDouble;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
-    std::string XLabel    = "Year";
-    std::string YLabel    = "Biomass ("+ getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() +"metric tons)";
-    std::string MainTitle = "Forecast Run for Species: ";
+    std::string XLabel     = "Year";
+    std::string YLabel     = "Biomass ("+ getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() +"metric tons)";
+    std::string MainTitle  = "Forecast Run for Species: ";
     std::string Algorithm;
     std::string Minimizer;
     std::string ObjectiveCriterion;
@@ -398,8 +397,7 @@ REMORA_UI::drawMSYLines()
                 ColumnLabelsForLegendMSY << "MSY = r/2";
             }
             drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
-                         // NumRunsPerForecast,NoUncertaintyRun,
-                         StartForecastYear,YMinSliderVal,
+                         StartForecastYear,YMinVal,YMaxVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
@@ -415,8 +413,7 @@ REMORA_UI::drawMSYLines()
                 ColumnLabelsForLegendPctMSY << "MSY = % of r/2";
             }
             drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
-                         // NumRunsPerForecast,NoUncertaintyRun,
-                         StartForecastYear,YMinSliderVal,
+                         StartForecastYear,YMinVal,YMaxVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegendPctMSY,HoverLabelsPct,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
@@ -445,8 +442,7 @@ REMORA_UI::drawMSYLines()
                     ColumnLabelsForLegendMSY << "MSY = r/2";
                 }
                 drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,
-                             // NumRunsPerForecast,NoUncertaintyRun,
-                             StartForecastYear,YMinSliderVal,
+                             StartForecastYear,YMinVal,YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegendMSY,HoverLabels,
                              MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
@@ -462,8 +458,7 @@ REMORA_UI::drawMSYLines()
                     ColumnLabelsForLegendPctMSY << "MSY = % of r/2";
                 }
                 drawMSYLines(chart,SpeciesNum,NumSpecies,NumYearsPerRun,
-                             // NumRunsPerForecast,NoUncertaintyRun,
-                             StartForecastYear,YMinSliderVal,
+                             StartForecastYear,YMinVal,YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegendPctMSY,HoverLabelsPct,
                              MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
@@ -483,10 +478,9 @@ REMORA_UI::drawMSYLines(
         int& SpeciesNum,
         int& NumSpecies,
         int& NumYearsPerRun,
-//        int& NumRunsPerForecast,
-//        int& NoUncertaintyRun,
         int& StartForecastYear,
-        int& YMinSliderVal,
+        double& YMinVal,
+        double& YMaxVal,
         std::string& Algorithm,
         std::string& Minimizer,
         std::string& ObjectiveCriterion,
@@ -564,7 +558,7 @@ REMORA_UI::drawMSYLines(
                 ShowLegend,
                 StartForecastYear,
                 nmfConstantsMSSPM::LabelXAxisAsInts,
-                YMinSliderVal,
+                YMinVal,YMaxVal,
                 nmfConstantsMSSPM::LeaveGapsWhereNegative,
                 ChartMSYData,
                 RowLabelsForBars,
@@ -608,8 +602,8 @@ REMORA_UI::drawSingleSpeciesChart()
     int EndYear;
     int NumSpecies;
     int StartForecastYear;
-    int YMinSliderVal      = 0;
-    // int NoUncertaintyRun   = 0;
+    double YMinVal         = 0;
+    double YMaxVal         = nmfConstants::NoValueDouble;
     int NumYearsPerRun     = getNumYearsPerRun();
     int NumRunsPerForecast = getNumRunsPerForecast();
     int SpeciesNum         = getSpeciesNum();
@@ -853,7 +847,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
-                        YMinSliderVal,
+                        YMinVal,YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
                         ChartLinesMonteCarloMultiPlot[species],
                         RowLabelsForBars,
@@ -877,7 +871,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
-                        YMinSliderVal,
+                        YMinVal,YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
                         ChartLineMultiPlot[species],
                         RowLabelsForBars,
@@ -889,8 +883,8 @@ REMORA_UI::drawSingleSpeciesChart()
                         GridLines,
                         Theme,
                         LineColors[0],
-                    "No Uncertainty Variations",
-                    1.0);
+                        "No Uncertainty Variations",
+                        1.0);
 
             removeMSYLines(chart,{"MSY = r/2","MSY = K/2"});
             removeMSYLines(chart,{"MSY = % of r/2","MSY = % of K/2"});
@@ -905,8 +899,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     HoverLabels << "";
                 }
                 drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
-                             // NumRunsPerForecast, NoUncertaintyRun,
-                             StartForecastYear,YMinSliderVal,
+                             StartForecastYear,YMinVal,YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabels,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
@@ -922,8 +915,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     HoverLabelsPct << "";
                 }
                 drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
-                             // NumRunsPerForecast,NoUncertaintyRun,
-                             StartForecastYear,YMinSliderVal,
+                             StartForecastYear,YMinVal,YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabelsPct,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
@@ -956,7 +948,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
                     nmfConstantsMSSPM::LabelXAxisAsInts,
-                    YMinSliderVal,
+                    YMinVal,YMaxVal,
                     nmfConstantsMSSPM::LeaveGapsWhereNegative,
                     ChartLinesMonteCarloSinglePlot,
                     RowLabelsForBars,
@@ -980,7 +972,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
                     nmfConstantsMSSPM::LabelXAxisAsInts,
-                    YMinSliderVal,
+                    YMinVal,YMaxVal,
                     nmfConstantsMSSPM::LeaveGapsWhereNegative,
                     ChartLineSinglePlot,
                     RowLabelsForBars,
@@ -1009,8 +1001,7 @@ REMORA_UI::drawSingleSpeciesChart()
                 HoverLabels << "";
             }
             drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
-                         // NumRunsPerForecast,NoUncertaintyRun,
-                         StartForecastYear,YMinSliderVal,
+                         StartForecastYear,YMinVal,YMaxVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegend,HoverLabels,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,1.0);
@@ -1026,7 +1017,7 @@ REMORA_UI::drawSingleSpeciesChart()
             }
             drawMSYLines(m_ChartWidget,SpeciesNum,NumSpecies,NumYearsPerRun,
                          // NumRunsPerForecast,NoUncertaintyRun,
-                         StartForecastYear,YMinSliderVal,
+                         StartForecastYear,YMinVal,YMaxVal,
                          Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                          RowLabelsForBars,ColumnLabelsForLegend,HoverLabelsPct,
                          MainTitle,XLabel,YLabel,nmfConstants::DontShowLegend,getPctMSYValue());
