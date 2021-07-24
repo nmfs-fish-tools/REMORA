@@ -1842,6 +1842,12 @@ REMORA_UI::setNumYearsPerRun(QString numYearsStr)
 }
 
 void
+REMORA_UI::setProjectName(QString projectName)
+{
+    m_ProjectName = projectName.toStdString();
+}
+
+void
 REMORA_UI::setScenarioChanged(bool state)
 {
     m_ScenarioChanged = state;
