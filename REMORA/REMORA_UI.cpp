@@ -1197,7 +1197,10 @@ REMORA_UI::getScaleValueFromPlot(int speciesNum, int year)
         scaleValue = 1.0;
     }
     if (scaleValue < 0) {
-        m_Logger->logMsg(nmfConstants::Error,"REMORA::getScaleValueFromPlot: Error reading from Scale plot");
+        std::string msg = "REMORA::getScaleValueFromPlot: Error reading from Scale plot. Got value: " +
+                std::to_string(scaleValue) + " for Year: " + std::to_string(year) +
+                " and Species: " + std::to_string(speciesNum);
+        m_Logger->logMsg(nmfConstants::Error,msg);
         return 0;
     }
     return scaleValue;
@@ -2247,9 +2250,14 @@ REMORA_UI::callback_RunPB()
     QString msg;
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB start");
+
     updateYearlyScaleFactorPoints();
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB saveForecastParameters");
     saveForecastParameters();
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB saveUncertaintyParameters");
     saveUncertaintyParameters();
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB saveHarvestData");
     ok = saveHarvestData();
     if (! ok) {
         QApplication::restoreOverrideCursor();
@@ -2257,12 +2265,16 @@ REMORA_UI::callback_RunPB()
         QMessageBox::warning(m_TopLevelWidget, "Warning", msg, QMessageBox::Ok);
         return;
     }
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB saveOutputBiomassData");
     saveOutputBiomassData();
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB drawPlot");
     drawPlot();
 
     enableWidgets(true);
 
     QApplication::restoreOverrideCursor();
+
+    m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB end");
 }
 
 void
