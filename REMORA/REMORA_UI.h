@@ -146,8 +146,16 @@ private:
     QWidget*              m_GridParent;
     QWidget*              m_TopLevelWidget;
     QWidget*              m_REMORAWidget;
+    bool                  m_IsMultiRun;
+    std::string           m_MultiRunType;
+    bool                  m_UseLastSingleRun;
 
     bool couldShowMSYCB();
+    void checkAlgorithmIdentifiersForMultiRun(
+            std::string& Algorithm,
+            std::string& Minimizer,
+            std::string& ObjectiveCriterion,
+            std::string& Scaling);
     void drawMultiSpeciesChart();
     void drawMSYLines();
     void drawMSYLines(
@@ -205,6 +213,7 @@ private:
     bool isYAxisLocked();
     void loadForecastScenario(QString filename);
     QWidget* loadUI(QWidget* parentW);
+    void readSettings();
     void removeAllMSYLines(QString type);
     void removeMSYLines(
             QChart*             chart,
