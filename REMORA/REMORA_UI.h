@@ -146,7 +146,7 @@ private:
     QWidget*              m_GridParent;
     QWidget*              m_TopLevelWidget;
     QWidget*              m_REMORAWidget;
-    bool                  m_IsMultiRun;
+//  bool                  m_IsMultiRun;
     std::string           m_MultiRunType;
     bool                  m_UseLastSingleRun;
 

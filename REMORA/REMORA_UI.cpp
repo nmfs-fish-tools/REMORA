@@ -26,7 +26,7 @@ REMORA_UI::REMORA_UI(
     m_IndexScaleFactorChart2 = -1;
     m_IndexScaleFactorPoint  =  0;
     m_TopLevelWidget         = loadUI(parentW);
-    m_IsMultiRun             = false;
+//  m_IsMultiRun             = false;
     m_UseLastSingleRun       = true;
     m_MultiRunType.clear();
 
@@ -1584,7 +1584,7 @@ REMORA_UI::readSettings()
     QSettings* settings = nmfUtilsQt::createSettings(nmfConstantsMSSPM::SettingsDirWindows,"MSSPM");
 
     settings->beginGroup("Runtime");
-    m_IsMultiRun       = settings->value("IsMultiRun",false).toBool();
+//  m_IsMultiRun       = settings->value("IsMultiRun",false).toBool();
     m_MultiRunType     = settings->value("MultiRunType","").toString().toStdString();
     m_UseLastSingleRun = settings->value("LastRunTypeForecast",false).toBool();
     settings->endGroup();
@@ -1680,7 +1680,6 @@ REMORA_UI::saveHarvestData()
 void
 REMORA_UI::saveOutputBiomassData()
 {
-//std::cout << "REMORA forecastName: " << m_ForecastName << std::endl;
     emit SaveOutputBiomassData(m_ForecastName);
 }
 
