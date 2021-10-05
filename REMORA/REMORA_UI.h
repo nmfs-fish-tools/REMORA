@@ -349,7 +349,7 @@ public:
      */
     void setSpeciesList(const QStringList& speciesList);
     void setHarvestType(QString arg1);
-    void setProjectName(QString projectName);
+    void setProjectName(const std::string& projectName);
 
 
 

@@ -245,7 +245,7 @@ REMORA_UI::drawMultiSpeciesChart()
     NumObservedYears  = EndYear - StartYear;
     StartForecastYear = EndYear;
 
-    m_DatabasePtr->getAllSpecies(m_Logger,SpeNames);
+    m_DatabasePtr->getSpecies(m_Logger,SpeNames);
     for (std::string species : SpeNames) {
         ColumnLabelsForLegend    << QString::fromStdString(species);
         HoverLabels              << QString::fromStdString(species);
@@ -397,7 +397,7 @@ REMORA_UI::drawMSYLines()
     getYearRange(StartYear,EndYear);
     StartForecastYear = EndYear;
 
-    m_DatabasePtr->getAllSpecies(m_Logger,SpeNames);
+    m_DatabasePtr->getSpecies(m_Logger,SpeNames);
     NumSpecies = SpeNames.size();
     MainTitle += SpeNames[SpeciesNum];
 
@@ -679,7 +679,7 @@ REMORA_UI::drawSingleSpeciesChart()
                                 255-brightnessFactor*255);
     LineColors.append(QColor(nmfConstants::LineColors[0].c_str()));
 
-    m_DatabasePtr->getAllSpecies(m_Logger,SpeNames);
+    m_DatabasePtr->getSpecies(m_Logger,SpeNames);
     NumSpecies = SpeNames.size();
     CurrentSpecies = SpeNames[SpeciesNum];
     MainTitle += " for Species: " + CurrentSpecies;
@@ -729,7 +729,7 @@ REMORA_UI::drawSingleSpeciesChart()
     }
 
     std::string currentSpecies = getCurrentSpecies();
-    if (! m_DatabasePtr->getForecastMonteCarloParameters(
+    if (! m_DatabasePtr->getForecastMonteCarloHoverData(
                 m_TopLevelWidget,m_Logger,currentSpecies,
                 m_ProjectName,m_ModelName,m_ForecastName,
                 Algorithm,Minimizer,ObjectiveCriterion,Scaling,
@@ -1623,7 +1623,7 @@ REMORA_UI::saveHarvestData()
     getYearRange(startYear,endYear);
     NumYears = endYear-startYear+1;
 
-    m_DatabasePtr->getAllSpecies(m_Logger,SpeNames);
+    m_DatabasePtr->getSpecies(m_Logger,SpeNames);
 
     cmd = "DELETE FROM " +
            m_HarvestType +
@@ -1922,9 +1922,9 @@ REMORA_UI::setNumYearsPerRun(QString numYearsStr)
 }
 
 void
-REMORA_UI::setProjectName(QString projectName)
+REMORA_UI::setProjectName(const std::string& projectName)
 {
-    m_ProjectName = projectName.toStdString();
+    m_ProjectName = projectName;
 }
 
 void
@@ -2125,6 +2125,13 @@ REMORA_UI::resetYAxis()
 void
 REMORA_UI::updateYearlyScaleFactorPoints()
 {
+    std::string msg = "";
+
+    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num Species: " + std::to_string(getNumSpecies());
+    m_Logger->logMsg(nmfConstants::Error,msg);
+    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num MLCharts: " + std::to_string(m_MovableLineCharts.size());
+    m_Logger->logMsg(nmfConstants::Error,msg);
+
     for (int i=0; i<getNumSpecies(); ++i) {
         m_MovableLineCharts[i]->calculateYearlyPoints();
     }
