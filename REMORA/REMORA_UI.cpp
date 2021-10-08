@@ -2125,12 +2125,11 @@ REMORA_UI::resetYAxis()
 void
 REMORA_UI::updateYearlyScaleFactorPoints()
 {
-    std::string msg = "";
-
-    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num Species: " + std::to_string(getNumSpecies());
-    m_Logger->logMsg(nmfConstants::Error,msg);
-    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num MLCharts: " + std::to_string(m_MovableLineCharts.size());
-    m_Logger->logMsg(nmfConstants::Error,msg);
+//    std::string msg = "";
+//    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num Species: " + std::to_string(getNumSpecies());
+//    m_Logger->logMsg(nmfConstants::Error,msg);
+//    msg = "REMORA_UI::updateYearlyScaleFactorPoints: Num MLCharts: " + std::to_string(m_MovableLineCharts.size());
+//    m_Logger->logMsg(nmfConstants::Error,msg);
 
     for (int i=0; i<getNumSpecies(); ++i) {
         m_MovableLineCharts[i]->calculateYearlyPoints();
