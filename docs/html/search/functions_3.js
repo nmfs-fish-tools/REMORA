@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keypressed_70',['KeyPressed',['../class_r_e_m_o_r_a___u_i.html#aaf5687a715b5c9d4e05e989933480213',1,'REMORA_UI']]]
+  ['isdeterministic_77',['isDeterministic',['../class_r_e_m_o_r_a___u_i.html#ab680c9ab68d9b37af1fad683d8d36456',1,'REMORA_UI']]]
 ];

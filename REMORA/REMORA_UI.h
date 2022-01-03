@@ -52,9 +52,10 @@
 
 #include <string.h>
 
-
 /**
- * @brief The main GUI class that contains all of the widget
+ * @brief Manager Mode GUI for Inituitive Forecasting
+ *
+ * The main GUI class that contains all of the widget
  * definitions for the REMORA Management tool. Please note that
  * this must be built with the nmfCharts library.
  */
@@ -95,7 +96,6 @@ private:
     QPushButton*  MModeForecastDelPB;
     QPushButton*  MModeForecastLoadPB;
     QPushButton*  MModeForecastSavePB;
-//  QPushButton*  MModeHarvestTypePB;
     QPushButton*  MModeMultiPlotTypePB;
     QPushButton*  MModeMaxScaleFactorPB;
     QRadioButton* MModeDeterministicRB;
@@ -124,8 +124,7 @@ private:
     nmfDatabase*          m_DatabasePtr;
     nmfLogger*            m_Logger;
     std::map<QString,int> m_SpeciesMap;
-    std::map<QString, void(REMORA_UI::*)(
-            QString arg)> m_FunctionMap;
+    std::map<QString, void(REMORA_UI::*)(QString arg)> m_FunctionMap;
     std::string           m_ForecastName;
     std::string           m_HarvestType;
     std::string           m_ProjectDir;
@@ -146,7 +145,6 @@ private:
     QWidget*              m_GridParent;
     QWidget*              m_TopLevelWidget;
     QWidget*              m_REMORAWidget;
-//  bool                  m_IsMultiRun;
     std::string           m_MultiRunType;
     bool                  m_UseLastSingleRun;
 
@@ -202,6 +200,7 @@ private:
     double getPlotScaleFactor();
     QString getYLBLPlotScaleFactor(double scaleFactor);
     void getYearRange(int& firstYear, int& lastYear);
+    void initializeScaleFactors();
     bool isAbsoluteBiomassPlotType();
     bool isFishingMortalityPlotType();
     bool isMultiPlot();
@@ -231,20 +230,19 @@ private:
     void setDeterministic(QString arg1);
     void setForecastPlotType(QString arg1);
     void setMaxYScaleFactor(QString maxY);
-    void InitializeScaleFactors();
+    void setMultiPlot(QString isChecked);
+    void setMSYLineVisible(QString arg1);
     void setNumRunsPerForecast(QString numRuns);
+    void setNumScaleFactorPoints(QString arg1);
     void setNumYearsPerRun(QString numYears);
     void setScenarioChanged(bool state);
     void setScenarioName(QString scenarioName);
     void setSingleSpecies(QString arg1);
-    void setupConnections();
-    void setupMovableLineCharts(const QStringList& SpeciesList);
-    void setMultiPlot(QString isChecked);
-    void setMSYLineVisible(QString arg1);
-    void setNumScaleFactorPoints(QString arg1);
     void setUncertaintyCarryingCapacity(QString arg1);
     void setUncertaintyGrowth(QString arg1);
     void setUncertaintyHarvest(QString arg1);
+    void setupConnections();
+    void setupMovableLineCharts(const QStringList& SpeciesList);
     void resetXAxis();
     /**
      * @brief Resets the maximum y-axis value of the model plot if the user has
@@ -282,35 +280,41 @@ signals:
     void UpdateSeedValue(int seedValue);
 
 public:
-
     /**
      * @brief Class definition for REMORA Management Tool
-     * @param DatabasePtr : pointer to database
-     * @param Logger : pointer to logger
-     * @param ProjectDir : project directory
-     * @param ProjectName : project name
-     * @param ModelName : model name
-     * @param SpeciesList : list of species
-     * @param MModeWidget : parent widget in which to place this class
+     * @param parent : parent widget that contains the REMORA GUI
+     * @param databasePtr : pointer to database API
+     * @param logger : pointer to error logger API
+     * @param projectDir : project directory
+     * @param projectName : project name
+     * @param modelName : model name
+     * @param speciesList : list of species
      */
     REMORA_UI(
             QWidget*     parent,
-            nmfDatabase* DatabasePtr,
-            nmfLogger*   Logger,
-            std::string& ProjectDir,
-            std::string& ProjectName,
-            std::string& ModelName,
-            QStringList& SpeciesList);
+            nmfDatabase* databasePtr,
+            nmfLogger*   logger,
+            std::string& projectDir,
+            std::string& projectName,
+            std::string& modelName,
+            QStringList& speciesList);
     ~REMORA_UI();
 
-    void setModelName(std::string modelName);
-    std::string getForecastName();
-
     /**
-     * @brief getScaleValueFromPlot : returns harvest scale value for the passed in species and year
+     * @brief Toggle the enable-ness of the carrying capacity widgets
+     * @param enable : true if widgets are enabled, false otherwise
+     */
+    void enableCarryingCapacityWidgets(bool enable);    
+    /**
+     * @brief Gets the name of the forecast that REMORA is currently using
+     * @return Returns the name of the forecast currently used in REMORA
+     */
+    std::string getForecastName();
+    /**
+     * @brief returns the harvest scale value for the passed in species and year
      * @param species : species number from the list of species
      * @param year : year along x-axis of scale factor plot
-     * @return Returns scale factor (y-value) corresponding to the passed in values
+     * @return Returns the scale factor (y-value) corresponding to the passed in values
      */
     double getScaleValueFromPlot(int species, int year);
     /**
@@ -319,7 +323,7 @@ public:
      */
     QWidget* getTopLevelWidget();
     /**
-     * @brief grabImage : Performs a "smart" screen grab based upon the state of the controls
+     * @brief Performs a "smart" screen grab based upon the state of the controls
      * @param pixmap : Returns the pixmap of the captured widget
      */
     void grabImage(QPixmap& pixmap);
@@ -334,24 +338,35 @@ public:
      */
     void setForecastName(QString forecastName);
     /**
-     * @brief Sets REMORA's internal number years per run variable to the passed value and updates the GUI
-     * @param numYearsPerRun : number of years per forecast run
-     */
-    void setForecastNumYearsPerRun(int numYearsPerRun);
-    /**
      * @brief Sets REMORA's internal number of runs per forecast to the passed value and updates the GUI
      * @param numRunsPerForecast : number of runs to generate per forecast scenario run
      */
     void setForecastNumRunsPerForecast(int numRunsPerForecast);
     /**
+     * @brief Sets REMORA's internal number years per run variable to the passed value and updates the GUI
+     * @param numYearsPerRun : number of years per forecast run
+     */
+    void setForecastNumYearsPerRun(int numYearsPerRun);
+    /**
+     * @brief Sets the harvest type class variable
+     * @param harvestType : harvest type used in REMORA
+     */
+    void setHarvestType(QString harvestType);
+    /**
+     * @brief Sets the model name to be used in the current REMORA instance
+     * @param modelName : model name of current REMORA instance
+     */
+    void setModelName(std::string modelName);
+    /**
+     * @brief Sets the project name to be used in the current REMORA instance
+     * @param projectName : project name of current REMORA instance
+     */
+    void setProjectName(const std::string& projectName);
+    /**
      * @brief Sets REMORA's species pulldown list to the passed list of QStrings
      * @param speciesList : current list of species in model
      */
     void setSpeciesList(const QStringList& speciesList);
-    void setHarvestType(QString arg1);
-    void setProjectName(const std::string& projectName);
-
-
 
 public Q_SLOTS:
     /**
@@ -421,6 +436,11 @@ public Q_SLOTS:
      */
     void callback_PctMSYDL(int value);
     /**
+     * @brief Callback invoked when the user presses the stochastic radio button
+     * @param pressed : state of the stochastic radio button
+     */
+    void callback_PlotTypeScaleFactorCMB();
+    /**
      * @brief Callback invoked when the user presses the Run button. Run causes the appropriate
      * forecast scenario biomass data to be generated and saved in the database for each species.
      * A default plot is then displayed using these data. Additional plots can be viewed by selecting
@@ -447,28 +467,16 @@ public Q_SLOTS:
      */
     void callback_SpeciesCMB(QString species);
     /**
-     * @brief Callback invoked when the user presses the stochastic radio button
-     * @param pressed : state of the stochastic radio button
-     */
-    void callback_PlotTypeScaleFactorCMB();
-
-    /**
      * @brief Callback involked when the user modifies the Scale Factor Combobox, call the drawPlot
      *        to rescale the y axis.
      * @param
      */
-
     void callback_StochasticRB(bool pressed);
     /**
      * @brief Callback invoked when the user modifies the Harvest Uncertainty dial
      * @param value : current value of the Harvest Uncertainty dial
      */
     void callback_UncertaintyHarvestParameterDL(int value);
-//    /**
-//     * @brief Callback invoked when the user presses the Harvest Uncertainty parameter toggle
-//     * button
-//     */
-//    void callback_UncertaintyHarvestParameterPB();
     /**
      * @brief Callback invoked when the user modifies the Carrying Capacity Uncertainty dial
      * @param value : current value of the Carrying Capacity Uncertainty dial
@@ -491,7 +499,6 @@ public Q_SLOTS:
      * @param value : current value of the Years per Run slider
      */
     void callback_YearsPerRunSL(int value);
-    void enableCarryingCapacityWidgets(bool enable);
 
 };
 

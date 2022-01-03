@@ -31,6 +31,7 @@ SOURCES += \
 
 HEADERS += \
     REMORA_UI.h \
+    mainpage.h \
     precompiled_header.h
 
 RESOURCES += \

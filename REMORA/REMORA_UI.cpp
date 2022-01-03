@@ -66,7 +66,7 @@ REMORA_UI::REMORA_UI(
     MModePctMSYLBL           = m_TopLevelWidget->findChild<QLabel*      >("MModePctMSYLBL");
     MModeForecastPlotTypeCMB = m_TopLevelWidget->findChild<QComboBox*   >("MModeForecastPlotTypeCMB");
     MModePlotScaleFactorCMB  = m_TopLevelWidget->findChild<QComboBox*   >("MModePlotScaleFactorCMB");
-    InitializeScaleFactors();
+    initializeScaleFactors();
     MModeForecastPlotTypeLB  = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastPlotTypeLB");
     MModeYAxisLockCB         = m_TopLevelWidget->findChild<QCheckBox*   >("MModeYAxisLockCB");
     MModeForecastTypeLB      = m_TopLevelWidget->findChild<QLabel*      >("MModeForecastTypeLB");
@@ -1852,10 +1852,10 @@ REMORA_UI::setForecastPlotType(QString arg1)
 }
 
 void
-REMORA_UI::setHarvestType(QString arg1)
+REMORA_UI::setHarvestType(QString harvestType)
 {
-    MModeHarvestTypeLBL->setText(arg1);
-    m_HarvestType = "ForecastHarvest" + arg1.split(" ")[0].toStdString();
+    MModeHarvestTypeLBL->setText(harvestType);
+    m_HarvestType = "ForecastHarvest" + harvestType.split(" ")[0].toStdString();
     m_HarvestType = QString::fromStdString(m_HarvestType).toLower().toStdString();
 }
 
@@ -1965,7 +1965,7 @@ REMORA_UI::setSpeciesList(const QStringList& speciesList)
 }
 
 void
-REMORA_UI::InitializeScaleFactors()
+REMORA_UI::initializeScaleFactors()
 {
     MModePlotScaleFactorCMB->addItem("Default");
     MModePlotScaleFactorCMB->addItem("000");
