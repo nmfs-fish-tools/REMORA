@@ -224,10 +224,11 @@ REMORA_UI::drawMultiSpeciesChart()
     std::string Minimizer;
     std::string ObjectiveCriterion;
     std::string Scaling;
-    std::string TableName = nmfConstantsMSSPM::TableForecasts;
     std::string MainTitle = "Forecast Runs for All Species";
     std::string XLabel    = "Year";
     std::string YLabel;
+    std::string ForecastHarvestType;
+    std::string GrowthForm,HarvestForm,CompetitionForm,PredationForm;
     QStringList RowLabelsForBars;
     QStringList ColumnLabelsForLegend;
     QStringList ColumnLabelsForLegendMSY;
@@ -273,8 +274,10 @@ REMORA_UI::drawMultiSpeciesChart()
     ChartLine.clear();
 
     if (! m_DatabasePtr->getForecastInfo(
-         TableName,m_ProjectName,m_ModelName,m_ForecastName,NumYearsPerRun,StartForecastYear,
-         Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
+                m_ProjectName,m_ModelName,m_ForecastName,NumYearsPerRun,StartForecastYear,
+                Algorithm,Minimizer,ObjectiveCriterion,Scaling,
+                GrowthForm,HarvestForm,CompetitionForm,PredationForm,
+                ForecastHarvestType,NumRunsPerForecast)) {
         return;
     }
     checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
@@ -386,7 +389,8 @@ REMORA_UI::drawMSYLines()
     std::string Minimizer;
     std::string ObjectiveCriterion;
     std::string Scaling;
-    std::string TableName = nmfConstantsMSSPM::TableForecasts;
+    std::string ForecastHarvestType;
+    std::string GrowthForm,HarvestForm,CompetitionForm,PredationForm;
     std::vector<std::string> SpeNames;
     QStringList RowLabelsForBars;
     QStringList HoverLabels;
@@ -402,9 +406,11 @@ REMORA_UI::drawMSYLines()
     MainTitle += SpeNames[SpeciesNum];
 
     if (! m_DatabasePtr->getForecastInfo(
-                TableName,m_ProjectName,m_ModelName,m_ForecastName,
+                m_ProjectName,m_ModelName,m_ForecastName,
                 NumYearsPerRun,StartForecastYear,
-                Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
+                Algorithm,Minimizer,ObjectiveCriterion,Scaling,
+                GrowthForm,HarvestForm,CompetitionForm,PredationForm,
+                ForecastHarvestType,NumRunsPerForecast)) {
         return;
     }
     checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
@@ -642,7 +648,6 @@ REMORA_UI::drawSingleSpeciesChart()
     double brightnessFactor = 0.2;
     double CatchValue;
     double remTime0Value    = 0;
-    std::string TableName = nmfConstantsMSSPM::TableForecasts;
     std::string ChartType = "Line";
     std::string LineStyle = "SolidLine";
     std::string MainTitle = "Forecast Run";
@@ -656,6 +661,8 @@ REMORA_UI::drawSingleSpeciesChart()
     std::string msg;
     std::string MainTitleMultiPlot;
     std::string YLabelMultiPlot;
+    std::string GrowthForm,HarvestForm,CompetitionForm,PredationForm;
+    std::string ForecastHarvestType;
     QStringList RowLabelsForBars;
     QStringList ColumnLabelsForLegend;
     QStringList HoverData;
@@ -702,9 +709,11 @@ REMORA_UI::drawSingleSpeciesChart()
     }
 
     if (! m_DatabasePtr->getForecastInfo(
-                TableName,m_ProjectName,m_ModelName,m_ForecastName,
+                m_ProjectName,m_ModelName,m_ForecastName,
                 NumYearsPerRun,StartForecastYear,
-                Algorithm,Minimizer,ObjectiveCriterion,Scaling,NumRunsPerForecast)) {
+                Algorithm,Minimizer,ObjectiveCriterion,Scaling,
+                GrowthForm,HarvestForm,CompetitionForm,PredationForm,
+                ForecastHarvestType,NumRunsPerForecast)) {
         return;
     }
     checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
@@ -1738,10 +1747,10 @@ REMORA_UI::saveUncertaintyParameters()
 
 //    checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
 
-    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity","Catchability",
+    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity","Catchability","Harvest",
                                   "CompetitionAlpha","CompetitionBetaSpecies","CompetitionBetaGuilds","CompetitionBetaGuildsGuilds",
                                   "PredationRho","PredationHandling","PredationExponent","SurveyQ",
-                                  "Harvest"};
+                                  "GrowthRateCovCoeff","CarryingCapacityCovCoeff","CatchabilityCovCoeff","SurveyQCovCoeff"};
     cmd  = "INSERT INTO " + nmfConstantsMSSPM::TableForecastUncertainty + " (" ;
     cmd += "SpeName,ProjectName,ModelName,ForecastName,Algorithm,Minimizer,ObjectiveCriterion,Scaling,";
     cmd +=  ParameterNames.join(",").toStdString();
@@ -1757,12 +1766,13 @@ REMORA_UI::saveUncertaintyParameters()
                     "','" + Scaling +
                     "',"  + InitBiomass +
                     ","   + GrowthRate +
-                    ","   + CarryingCapacity;
+                    ","   + CarryingCapacity +
+                    ","   + Harvest;
             // N.B. Next line will need to be modified once more parameters are used in the ForecastUncertainty calculations
-            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for 3 parameters + Harvest
+            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for: InitBiomass, GrowthRate, CarryingCapacity, and Harvest
                 cmd += ", 0";
             }
-            cmd += "," + Harvest + "),";
+            cmd += "),";
 
             //Ask about the number of columns in the parameter count
             //ERROR: REMORA::callback_SavePB: Write table error: Column count doesn't match value count at row 1 QMYSQL: Unable to execute query
