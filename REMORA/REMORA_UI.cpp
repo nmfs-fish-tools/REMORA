@@ -1673,7 +1673,7 @@ REMORA_UI::saveHarvestData()
                     ", "  + std::to_string(finalValue) + "),";
         }
     }
-//std::cout << "cmd:\n" << cmd << std::endl;
+//std::cout << "ccmd:\n" << cmd << std::endl;
     cmd = cmd.substr(0,cmd.size()-1);
 
     errorMsg = m_DatabasePtr->nmfUpdateDatabase(cmd);
@@ -2245,7 +2245,7 @@ REMORA_UI::callback_MaxScaleFactorPB()
     int newValue;
     int speciesNum = getSpeciesNum();
 
-    // Allow only values of 1, 2, 3, or 4 for the button text
+    // Allow only values of 1 thru MAX_SCALE_VALUE for the button text
     QString maxSF = MModeMaxScaleFactorPB->text();
     newValue = (maxSF.toInt()%MAX_SCALE_VALUE)+1;
     MModeMaxScaleFactorPB->setText(QString::number(newValue));
