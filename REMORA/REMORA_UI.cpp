@@ -25,10 +25,13 @@ REMORA_UI::REMORA_UI(
     m_IndexScaleFactorChart1 =  0;
     m_IndexScaleFactorChart2 = -1;
     m_IndexScaleFactorPoint  =  0;
+    m_MainWindow             = qobject_cast<QMainWindow*>(parentW);
     m_TopLevelWidget         = loadUI(parentW);
 //  m_IsMultiRun             = false;
     m_UseLastSingleRun       = true;
     m_MultiRunType.clear();
+    m_MainWindowWidth        = m_MainWindow->width();
+    m_MainWindowHeight       = m_MainWindow->height();
 
     MModeYearsPerRunSL       = m_TopLevelWidget->findChild<QSlider*     >("MModeYearsPerRunSL");
     MModeRunsPerForecastSL   = m_TopLevelWidget->findChild<QSlider*     >("MModeRunsPerForecastSL");
@@ -48,13 +51,15 @@ REMORA_UI::REMORA_UI(
     MModeUpperPlotWidget     = m_TopLevelWidget->findChild<QWidget*     >("MModeUpperPlotWidget");
     MModeHarvestChartWidget  = m_TopLevelWidget->findChild<QWidget*     >("MModeHarvestChartWidget");
     MModeWindowWidget        = m_TopLevelWidget->findChild<QWidget*     >("MModeWindowWidget");
+    MModeFrame               = m_TopLevelWidget->findChild<QFrame*      >("MModeFrame");
+    MModeWidget              = m_TopLevelWidget->findChild<QWidget*     >("MModeWidget");
     MModeParentChartW        = m_TopLevelWidget->findChild<QWidget*     >("MModeParentChartW");
     MModeForecastRunPB       = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastRunPB");
     MModeForecastLoadPB      = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastLoadPB");
     MModeForecastSavePB      = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastSavePB");
     MModeForecastDelPB       = m_TopLevelWidget->findChild<QPushButton* >("MModeForecastDelPB");
     MModeMultiPlotTypePB     = m_TopLevelWidget->findChild<QPushButton* >("MModeMultiPlotTypePB");
-    MModeMaxScaleFactorPB    = m_TopLevelWidget->findChild<QPushButton* >("MModeMaxScaleFactorPB");
+    MModeMaxScaleFactorSB    = m_TopLevelWidget->findChild<QSpinBox*    >("MModeMaxScaleFactorSB");
     MModeShowMSYCB           = m_TopLevelWidget->findChild<QCheckBox*   >("MModeShowMSYCB");
     MModePctMSYCB            = m_TopLevelWidget->findChild<QCheckBox*   >("MModePctMSYCB");
     MModeDeterministicRB     = m_TopLevelWidget->findChild<QRadioButton*>("MModeDeterministicRB");
@@ -64,6 +69,7 @@ REMORA_UI::REMORA_UI(
 //  MModeHarvestTypePB       = m_TopLevelWidget->findChild<QPushButton* >("MModeHarvestTypePB");
     MModeHarvestTypeLBL      = m_TopLevelWidget->findChild<QLabel*      >("MModeHarvestTypeLBL");
     MModePctMSYLBL           = m_TopLevelWidget->findChild<QLabel*      >("MModePctMSYLBL");
+    MModeMaxScaleFactorLBL   = m_TopLevelWidget->findChild<QLabel*      >("MModeMaxScaleFactorLBL");
     MModeForecastPlotTypeCMB = m_TopLevelWidget->findChild<QComboBox*   >("MModeForecastPlotTypeCMB");
     MModePlotScaleFactorCMB  = m_TopLevelWidget->findChild<QComboBox*   >("MModePlotScaleFactorCMB");
     initializeScaleFactors();
@@ -76,6 +82,8 @@ REMORA_UI::REMORA_UI(
     MModePlotScaleFactorLBL->setStatusTip("Sets the scale of y-axis");
     MModeKParamLB            = m_TopLevelWidget->findChild<QLabel*      >("MModeKParamLB");
     MModeKPctLB              = m_TopLevelWidget->findChild<QLabel*      >("MModeKPctLB");
+    m_FrameWidth             = MModeFrame->width();
+    m_FrameHeight            = MModeFrame->height();
 
     MModeDeterministicRB->setChecked(false);
     MModeStochasticRB->setChecked(true);
@@ -98,6 +106,9 @@ REMORA_UI::REMORA_UI(
     MModePctMSYLE->setEnabled(false);
     MModePctMSYDL->setEnabled(false);
     MModePctMSYLBL->setEnabled(false);
+
+    // Set scale spin box default
+    MModeMaxScaleFactorSB->setValue(DEFAULT_MAX_SCALE_VALUE);
 
     //Defaulting the sliders to their lowest values
     MModeYearsPerRunSL->setValue(m_NumYearsPerRun);
@@ -159,6 +170,7 @@ REMORA_UI::REMORA_UI(
     setupConnections();
     enableWidgets(false);
 
+//qDebug() << "Win size(1): " << MModeWindowWidget->width() << MModeWindowWidget->height();
 }
 
 REMORA_UI::~REMORA_UI()
@@ -202,6 +214,7 @@ REMORA_UI::drawMultiSpeciesChart()
     bool isFishingMortality = isFishingMortalityPlotType();
     bool isAbsoluteBiomass  = isAbsoluteBiomassPlotType();
     bool isRelativeBiomass  = isRelativeBiomassPlotType();
+
     int StartForecastYear;
     int StartYear;
     int EndYear;
@@ -216,7 +229,7 @@ REMORA_UI::drawMultiSpeciesChart()
     double YMaxVal  = nmfConstants::NoValueDouble;
     double ScaleVal = getPlotScaleFactor();
     double HarvestValue;
-    double remTime0Value  = 0;
+    double remTime0Value  = 1;
     std::string ChartType = "Line";
     std::string LineStyle = "SolidLine";
     std::string msg;
@@ -253,7 +266,7 @@ REMORA_UI::drawMultiSpeciesChart()
         ColumnLabelsForLegendMSY << "MSY";
     }
     HoverLabels = ColumnLabelsForLegend;
-    NumSpecies = SpeNames.size();
+    NumSpecies  = SpeNames.size();
 
     if (isFishingMortality) {
         YLabel = nmfConstantsMSSPM::OutputChartExploitationCatchTitle.toStdString();
@@ -310,6 +323,7 @@ REMORA_UI::drawMultiSpeciesChart()
                 if (isRelativeBiomass) {
                     if (time == 0) {
                         remTime0Value = ChartLine(0,species);
+qDebug() << "species,rem0: " << species << remTime0Value;
                     }
                     if (nmfUtils::isNearlyZero(remTime0Value)) {
                         msg = "Found first year Biomass = 0, setting relative Biomass to 0 for Species: " +
@@ -615,6 +629,10 @@ REMORA_UI::drawPlot()
     m_ForecastHarvestLineChart->clear(m_ChartWidget);
     m_ForecastLineChartMonteCarlo->clear(m_ChartWidget);
 
+    // These are necessary to prevent the window from resizing
+    m_MainWindow->setMinimumSize(m_MainWindowWidth,m_MainWindowHeight);
+    MModeFrame->setMinimumSize(m_FrameWidth,m_FrameHeight);
+
     if (couldShowMSYCB()) {
         drawSingleSpeciesChart();
     } else {
@@ -624,6 +642,7 @@ REMORA_UI::drawPlot()
     // Rescale axes of plot(s)
     resetXAxis();
     resetYAxis();
+
 }
 
 void
@@ -830,7 +849,7 @@ REMORA_UI::drawSingleSpeciesChart()
         m_Views.clear();
         for (int i=0; i<NumSpecies; ++i) {
             m_Charts.append(new QChart());
-            m_Views.append(new QChartView(m_Charts[i]));
+            m_Views.append( new QChartView(m_Charts[i]));
         }
 
         // Test if perfect square
@@ -865,7 +884,11 @@ REMORA_UI::drawSingleSpeciesChart()
         } else if (isRelativeBiomass) {
             YLabelMultiPlot = "Rel Biomass";
         }
-        for (QChart* chart : m_Charts) {
+        QChart *chart;
+        for (int i=0; i<m_Charts.size(); ++i) {
+
+            chart = m_Charts[i];
+
             // This will set a chart background to a color. Revisit this logic if want to change the dark settings for a chart
             //chart->setBackgroundBrush(QBrush(QColor(100,100,100)));
 
@@ -1085,7 +1108,8 @@ REMORA_UI::enableWidgets(bool enable)
     MModePctMSYDL->setEnabled(enable);
     MModeSpeciesCMB->setEnabled(enable);
     MModeSpeciesLB->setEnabled(enable);
-    MModeMaxScaleFactorPB->setEnabled(enable);
+    MModeMaxScaleFactorLBL->setEnabled(enable);
+    MModeMaxScaleFactorSB->setEnabled(enable);
     MModeShowMSYCB->setEnabled(enable);
     MModePctMSYCB->setEnabled(enable);
     MModePlotTypeSSRB->setEnabled(enable);
@@ -1175,7 +1199,7 @@ REMORA_UI::getMaxYScaleFactor(const int& speciesNum)
     if (speciesNum >= 0) {
         return m_MovableLineCharts[speciesNum]->getMaxYScaleFactor();
     } else {
-        return MAX_SCALE_VALUE;
+        return DEFAULT_MAX_SCALE_VALUE;
     }
 }
 
@@ -1431,7 +1455,7 @@ REMORA_UI::loadForecastScenario(QString filename)
         }
     }
 
-    MModeMaxScaleFactorPB->setText(QString::number(m_MaxYAxisValues[0]));
+    MModeMaxScaleFactorSB->setValue(m_MaxYAxisValues[0]);
 }
 
 QWidget*
@@ -1745,7 +1769,7 @@ REMORA_UI::saveUncertaintyParameters()
         return;
     }
 
-//    checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
+//  checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
 
     QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity","Catchability","Harvest",
                                   "CompetitionAlpha","CompetitionBetaSpecies","CompetitionBetaGuilds","CompetitionBetaGuildsGuilds",
@@ -1872,15 +1896,15 @@ REMORA_UI::setHarvestType(QString harvestType)
 void
 REMORA_UI::setMaxYScaleFactor(QString maxY)
 {
-    int value = (maxY.toInt()-1 == 0) ? MAX_SCALE_VALUE : maxY.toInt()-1;
+    int value = (maxY.toInt()-1 == 0) ? DEFAULT_MAX_SCALE_VALUE : maxY.toInt()-1;
 
     m_MaxYAxisValues[m_IndexMaxYScaleFactor] = maxY.toInt();
     m_MovableLineCharts[m_IndexMaxYScaleFactor]->setMaxYValue(maxY.toInt());
 
     ++m_IndexMaxYScaleFactor;
 
-    MModeMaxScaleFactorPB->setText(QString::number(value));
-    callback_MaxScaleFactorPB();
+    MModeMaxScaleFactorSB->setValue(value);
+    callback_MaxScaleFactorSB(value);
 }
 
 void
@@ -2046,8 +2070,8 @@ REMORA_UI::setupConnections()
             this,                     SLOT(callback_SpeciesCMB(QString)));
     connect(MModeMultiPlotTypePB,     SIGNAL(clicked()),
             this,                     SLOT(callback_MultiPlotTypePB()));
-    connect(MModeMaxScaleFactorPB,    SIGNAL(clicked()),
-            this,                     SLOT(callback_MaxScaleFactorPB()));
+    connect(MModeMaxScaleFactorSB,    SIGNAL(valueChanged(int)),
+            this,                     SLOT(callback_MaxScaleFactorSB(int)));
     connect(MModeForecastPlotTypeCMB, SIGNAL(activated(QString)),
             this,                     SLOT(callback_ForecastPlotTypeCMB(QString)));
     connect(MModeYAxisLockCB,         SIGNAL(toggled(bool)),
@@ -2091,7 +2115,7 @@ REMORA_UI::setupMovableLineCharts(const QStringList& SpeciesList)
 
             m_MovableLineCharts.push_back(movableLineChart);
 
-            m_MaxYAxisValues.push_back(MAX_SCALE_VALUE);
+            m_MaxYAxisValues.push_back(DEFAULT_MAX_SCALE_VALUE);
         }
         m_MovableLineCharts[0]->show();
 
@@ -2240,17 +2264,12 @@ REMORA_UI::callback_LoadPB()
 }
 
 void
-REMORA_UI::callback_MaxScaleFactorPB()
+REMORA_UI::callback_MaxScaleFactorSB(int newValue)
 {
-    int newValue;
     int speciesNum = getSpeciesNum();
 
-    // Allow only values of 1 thru MAX_SCALE_VALUE for the button text
-    QString maxSF = MModeMaxScaleFactorPB->text();
-    newValue = (maxSF.toInt()%MAX_SCALE_VALUE)+1;
-    MModeMaxScaleFactorPB->setText(QString::number(newValue));
     m_MaxYAxisValues[speciesNum] = newValue;
-    m_MovableLineCharts[speciesNum]->setMaxYValue(MModeMaxScaleFactorPB->text().toInt());
+    m_MovableLineCharts[speciesNum]->setMaxYValue(newValue);
     setScenarioChanged(true);
 }
 
@@ -2342,6 +2361,10 @@ REMORA_UI::callback_RunPB()
     bool ok;
     QString msg;
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    m_MainWindowWidth  = m_MainWindow->width();
+    m_MainWindowHeight = m_MainWindow->height();
+    m_FrameWidth       = MModeFrame->width();
+    m_FrameHeight      = MModeFrame->height();
 
     m_Logger->logMsg(nmfConstants::Normal,"REMORA_UI::callback_RunPB start");
 
@@ -2443,7 +2466,7 @@ REMORA_UI::callback_SpeciesCMB(QString species)
             m_MovableLineCharts[i]->hide();
         }
         m_MovableLineCharts[speciesNum]->show();
-        MModeMaxScaleFactorPB->setText(QString::number(m_MaxYAxisValues[speciesNum]));
+        MModeMaxScaleFactorSB->setValue(m_MaxYAxisValues[speciesNum]);
     }
     drawPlot();
     setScenarioChanged(true);
@@ -2526,4 +2549,3 @@ REMORA_UI::callback_YearsPerRunSL(int value)
     resetYearsPerRunOnScaleFactorPlot();
     setScenarioChanged(true);
 }
-

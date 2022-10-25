@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>mModeWindowWidget</class>
- <widget class="QWidget" name="mModeWindowWidget">
+ <class>MModeWindowWidget</class>
+ <widget class="QWidget" name="MModeWindowWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -195,6 +195,9 @@
                </size>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QGroupBox" name="MModeControlsGB">
                  <property name="sizePolicy">
@@ -1219,9 +1222,12 @@
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Fixed</enum>
+                      </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>10</width>
+                        <width>5</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -1280,13 +1286,13 @@
                       </property>
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>175</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>150</width>
+                        <width>175</width>
                         <height>16777215</height>
                        </size>
                       </property>
@@ -1308,62 +1314,6 @@
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_32">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>8</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="MModeMaxScaleFactorPB">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>25</width>
-                        <height>25</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>25</width>
-                        <height>25</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <weight>50</weight>
-                        <bold>false</bold>
-                       </font>
-                      </property>
-                      <property name="toolTip">
-                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
-                      </property>
-                      <property name="statusTip">
-                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
-                      </property>
-                      <property name="whatsThis">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Maximum Scale Factor Plot Y Value&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This button allows the user to change the maximum value on the y-axis of the Harvest Scale Factor plot. The possible choices are 1, 2, 3, or 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="text">
-                       <string>4</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <spacer name="horizontalSpacer_21">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -1373,7 +1323,7 @@
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>8</width>
+                        <width>5</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -1383,6 +1333,9 @@
                   </item>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_18">
+                    <property name="spacing">
+                     <number>2</number>
+                    </property>
                     <item>
                      <spacer name="horizontalSpacer_37">
                       <property name="orientation">
@@ -1411,11 +1364,89 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="MModePlotScaleFactorCMB">
+                      <property name="minimumSize">
+                       <size>
+                        <width>100</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>100</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
                       <property name="font">
                        <font>
                         <weight>50</weight>
                         <bold>false</bold>
                        </font>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_32">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Fixed</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>5</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="MModeMaxScaleFactorLBL">
+                      <property name="font">
+                       <font>
+                        <weight>50</weight>
+                        <bold>false</bold>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
+                      </property>
+                      <property name="statusTip">
+                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
+                      </property>
+                      <property name="whatsThis">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Maximum Scale Factor Plot Y Value&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This spin box allows the user to change the maximum value on the y-axis of the Harvest Scale Factor plot. The possible choices are values 1 through 200.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Max:</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QSpinBox" name="MModeMaxScaleFactorSB">
+                      <property name="font">
+                       <font>
+                        <weight>50</weight>
+                        <bold>false</bold>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
+                      </property>
+                      <property name="statusTip">
+                       <string>Sets the max y-value on the Harvest Scale Factor plot</string>
+                      </property>
+                      <property name="whatsThis">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Maximum Scale Factor Plot Y Value&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This spin box allows the user to change the maximum value on the y-axis of the Harvest Scale Factor plot. The possible choices are values 1 through 200.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="minimum">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <number>200</number>
                       </property>
                      </widget>
                     </item>

@@ -42,6 +42,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
+#include <QSpinBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
 
@@ -64,7 +65,7 @@ class REMORA_UI : public QObject
     Q_OBJECT
 
 private:
-    const int     MAX_SCALE_VALUE = 4;
+    const int     DEFAULT_MAX_SCALE_VALUE = 4;
 
     QCheckBox*    MModeShowMSYCB;
     QCheckBox*    MModePctMSYCB;
@@ -85,6 +86,7 @@ private:
     QLabel*       MModeKPctLB;
     QLabel*       MModeSpeciesLB;
     QLabel*       MModeHarvestTypeLBL;
+    QLabel*       MModeMaxScaleFactorLBL;
     QLineEdit*    MModeScenarioNameLE;
     QLineEdit*    MModeYearsPerRunLE;
     QLineEdit*    MModeRunsPerForecastLE;
@@ -97,7 +99,7 @@ private:
     QPushButton*  MModeForecastLoadPB;
     QPushButton*  MModeForecastSavePB;
     QPushButton*  MModeMultiPlotTypePB;
-    QPushButton*  MModeMaxScaleFactorPB;
+    QSpinBox*     MModeMaxScaleFactorSB;
     QRadioButton* MModeDeterministicRB;
     QRadioButton* MModeStochasticRB;
     QRadioButton* MModePlotTypeSSRB;
@@ -107,7 +109,9 @@ private:
     QWidget*      MModeHarvestChartWidget;
     QWidget*      MModeUpperPlotWidget;
     QWidget*      MModeWindowWidget;
+    QWidget*      MModeWidget;
     QWidget*      MModeParentChartW;
+    QFrame*       MModeFrame;
 
     bool                  m_ScenarioChanged;
     int                   m_IndexMaxYScaleFactor;
@@ -117,6 +121,10 @@ private:
     int                   m_NumRunsPerForecast;
     int                   m_NumYearsPerRun;
     double                m_MaxYAxis;
+    int                   m_MainWindowWidth;
+    int                   m_MainWindowHeight;
+    int                   m_FrameWidth;
+    int                   m_FrameHeight;
     nmfChartLine*         m_ForecastBiomassLineChart;
     nmfChartLine*         m_ForecastHarvestLineChart;
     nmfChartLine*         m_ForecastLineChartMonteCarlo;
@@ -147,6 +155,7 @@ private:
     QWidget*              m_REMORAWidget;
     std::string           m_MultiRunType;
     bool                  m_UseLastSingleRun;
+    QMainWindow*          m_MainWindow;
 
     bool couldShowMSYCB();
     void checkAlgorithmIdentifiersForMultiRun(
@@ -393,9 +402,10 @@ public Q_SLOTS:
      */
     void callback_LoadPB();
     /**
-     * @brief Callback invoked when the user toggles the maximum scale factor button
+     * @brief Callback invoked when the user changes the maximum scale factor spin box
+     * @param newValue : newly set value in the spin box
      */
-    void callback_MaxScaleFactorPB();
+    void callback_MaxScaleFactorSB(int newValue);
     /**
      * @brief Callback invoked when the user moves the mouse
      * @param event : mouse event data
