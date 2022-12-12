@@ -1771,7 +1771,7 @@ REMORA_UI::saveUncertaintyParameters()
 
 //  checkAlgorithmIdentifiersForMultiRun(Algorithm,Minimizer,ObjectiveCriterion,Scaling);
 
-    QStringList ParameterNames = {"InitBiomass","GrowthRate","CarryingCapacity","Catchability","Harvest",
+    QStringList ParameterNames = {"InitBiomass","GrowthRate","GrowthRateShape","CarryingCapacity","Catchability","Harvest",
                                   "CompetitionAlpha","CompetitionBetaSpecies","CompetitionBetaGuilds","CompetitionBetaGuildsGuilds",
                                   "PredationRho","PredationHandling","PredationExponent","SurveyQ",
                                   "GrowthRateCovCoeff","CarryingCapacityCovCoeff","CatchabilityCovCoeff","SurveyQCovCoeff"};
