@@ -120,11 +120,17 @@ private:
     int                   m_IndexScaleFactorPoint;
     int                   m_NumRunsPerForecast;
     int                   m_NumYearsPerRun;
-    double                m_MaxYAxis;
     int                   m_MainWindowWidth;
     int                   m_MainWindowHeight;
     int                   m_FrameWidth;
     int                   m_FrameHeight;
+    int                   m_LineWidthData;
+    int                   m_FontSizeLabel;
+    int                   m_FontSizeNumber;
+    int                   m_LineWidthAxes;
+    int                   m_LineColor;
+    double                m_MaxYAxis;
+    QString               m_Font;
     nmfChartLine*         m_ForecastBiomassLineChart;
     nmfChartLine*         m_ForecastHarvestLineChart;
     nmfChartLine*         m_ForecastLineChartMonteCarlo;
@@ -300,13 +306,13 @@ public:
      * @param speciesList : list of species
      */
     REMORA_UI(
-            QWidget*     parent,
-            nmfDatabase* databasePtr,
-            nmfLogger*   logger,
-            std::string& projectDir,
-            std::string& projectName,
-            std::string& modelName,
-            QStringList& speciesList);
+            QWidget*       parent,
+            nmfDatabase*   databasePtr,
+            nmfLogger*     logger,
+            std::string&   projectDir,
+            std::string&   projectName,
+            std::string&   modelName,
+            QStringList&   speciesList);
     ~REMORA_UI();
 
     /**
@@ -356,6 +362,21 @@ public:
      * @param numYearsPerRun : number of years per forecast run
      */
     void setForecastNumYearsPerRun(int numYearsPerRun);
+    /**
+     * @brief Set chart formatting for publishing (i.e., line width, font, font size)
+     * @param lineWidthData : width of data line(s)
+     * @param fontSizeLabel : the point size of the label titles
+     * @param fontSizeNumber : the point size of the axes' numeric scale values
+     * @param fontLabel : the font of the label titles and axes values
+     * @param lineWidthAxes : width of the x and y axes
+     * @param lineColor : value to be used for r,g,b values for axes line color
+     */
+    void setForPublishing(const int&     lineWidthData,
+                          const int&     fontSizeLabel,
+                          const int&     fontSizeNumeric,
+                          const QString& fontLabel,
+                          const int&     lineWidthAxes,
+                          const int&     lineColor);
     /**
      * @brief Sets the harvest type class variable
      * @param harvestType : harvest type used in REMORA

@@ -3,13 +3,13 @@
 
 
 REMORA_UI::REMORA_UI(
-        QWidget*     parentW,
-        nmfDatabase* databasePtr,
-        nmfLogger*   logger,
-        std::string& projectDir,
-        std::string& projectName,
-        std::string& modelName,
-        QStringList& SpeciesList)
+        QWidget*       parentW,
+        nmfDatabase*   databasePtr,
+        nmfLogger*     logger,
+        std::string&   projectDir,
+        std::string&   projectName,
+        std::string&   modelName,
+        QStringList&   SpeciesList)
 {
     m_DatabasePtr            = databasePtr;
     m_Logger                 = logger;
@@ -32,6 +32,12 @@ REMORA_UI::REMORA_UI(
     m_MultiRunType.clear();
     m_MainWindowWidth        = m_MainWindow->width();
     m_MainWindowHeight       = m_MainWindow->height();
+    m_LineWidthData          = 2;
+    m_FontSizeLabel          = 15;
+    m_FontSizeNumber         = 11;
+    m_Font                   = "Unicode";
+    m_LineWidthAxes          = 2;
+    m_LineColor              = 1;
 
     MModeYearsPerRunSL       = m_TopLevelWidget->findChild<QSlider*     >("MModeYearsPerRunSL");
     MModeRunsPerForecastSL   = m_TopLevelWidget->findChild<QSlider*     >("MModeRunsPerForecastSL");
@@ -176,6 +182,22 @@ REMORA_UI::REMORA_UI(
 REMORA_UI::~REMORA_UI()
 {
 
+}
+
+void
+REMORA_UI::setForPublishing(const int&     lineWidthData,
+                            const int&     fontSizeLabel,
+                            const int&     fontSizeNumber,
+                            const QString& fontLabel,
+                            const int&     lineWidthAxes,
+                            const int&     lineColor)
+{
+    m_LineWidthData          = lineWidthData;
+    m_FontSizeLabel          = fontSizeLabel;
+    m_FontSizeNumber         = fontSizeNumber;
+    m_Font                   = fontLabel;
+    m_LineWidthAxes          = lineWidthAxes;
+    m_LineColor              = lineColor;
 }
 
 void
@@ -345,6 +367,7 @@ qDebug() << "species,rem0: " << species << remTime0Value;
                 m_ChartWidget,
                 ChartType,
                 LineStyle,
+                m_LineWidthData,
                 nmfConstantsMSSPM::ShowFirstPoint,
                 nmfConstants::ShowLegend,
                 StartForecastYear,
@@ -358,6 +381,11 @@ qDebug() << "species,rem0: " << species << remTime0Value;
                 MainTitle,
                 XLabel,
                 YLabel,
+                m_FontSizeLabel,
+                m_FontSizeNumber,
+                m_Font,
+                m_LineWidthAxes,
+                m_LineColor,
                 GridLines,
                 Theme,
                 LineColors[0],
@@ -602,6 +630,7 @@ REMORA_UI::drawMSYLines(
                 chart,
                 ChartType,
                 LineStyle,
+                m_LineWidthData,
                 nmfConstantsMSSPM::ShowFirstPoint,
                 ShowLegend,
                 StartForecastYear,
@@ -615,6 +644,11 @@ REMORA_UI::drawMSYLines(
                 MainTitle,
                 XLabel,
                 YLabel,
+                m_FontSizeLabel,
+                m_FontSizeNumber,
+                m_Font,
+                m_LineWidthAxes,
+                m_LineColor,
                 GridLines,
                 Theme,
                 LineColor,
@@ -908,6 +942,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         chart,
                         ChartType,
                         LineStyle,
+                        m_LineWidthData,
                         nmfConstantsMSSPM::ShowFirstPoint,
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
@@ -921,6 +956,11 @@ REMORA_UI::drawSingleSpeciesChart()
                         MainTitleMultiPlot,
                         XLabel,
                         YLabelMultiPlot,
+                        m_FontSizeLabel,
+                        m_FontSizeNumber,
+                        m_Font,
+                        m_LineWidthAxes,
+                        m_LineColor,
                         GridLines,
                         Theme,
                         dimmedColor,
@@ -932,6 +972,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         chart,
                         ChartType,
                         LineStyle,
+                        m_LineWidthData,
                         nmfConstantsMSSPM::ShowFirstPoint,
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
@@ -945,6 +986,11 @@ REMORA_UI::drawSingleSpeciesChart()
                         MainTitleMultiPlot,
                         XLabel,
                         YLabelMultiPlot,
+                        m_FontSizeLabel,
+                        m_FontSizeNumber,
+                        m_Font,
+                        m_LineWidthAxes,
+                        m_LineColor,
                         GridLines,
                         Theme,
                         LineColors[0],
@@ -1009,6 +1055,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     m_ChartWidget,
                     ChartType,
                     LineStyle,
+                    m_LineWidthData,
                     nmfConstantsMSSPM::ShowFirstPoint,
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
@@ -1022,6 +1069,11 @@ REMORA_UI::drawSingleSpeciesChart()
                     MainTitle,
                     XLabel,
                     YLabel,
+                    m_FontSizeLabel,
+                    m_FontSizeNumber,
+                    m_Font,
+                    m_LineWidthAxes,
+                    m_LineColor,
                     GridLines,
                     Theme,
                     dimmedColor,
@@ -1033,6 +1085,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     m_ChartWidget,
                     ChartType,
                     LineStyle,
+                    m_LineWidthData,
                     nmfConstantsMSSPM::ShowFirstPoint,
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
@@ -1046,6 +1099,11 @@ REMORA_UI::drawSingleSpeciesChart()
                     MainTitle,
                     XLabel,
                     YLabel,
+                    m_FontSizeLabel,
+                    m_FontSizeNumber,
+                    m_Font,
+                    m_LineWidthAxes,
+                    m_LineColor,
                     GridLines,
                     Theme,
                     LineColors[0],
@@ -1311,11 +1369,11 @@ REMORA_UI::getYLBLPlotScaleFactor(double scaleFactor)
     if (scaleFactor == 1) {
         return "";
     } else if (scaleFactor == 1000) {
-        scaleStr = "10^3 ";
+        scaleStr = "10³ "; // ^3
     } else if (scaleFactor == 1000000) {
-        scaleStr = "10^6 ";
+        scaleStr = "10⁶ "; // ^6
     } else if (scaleFactor == 1000000000) {
-        scaleStr = "10^9 ";
+        scaleStr = "10⁹ "; // ^9
     }
 
     return scaleStr;
