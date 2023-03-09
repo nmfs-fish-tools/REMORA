@@ -38,6 +38,7 @@ REMORA_UI::REMORA_UI(
     m_Font                   = "Unicode";
     m_LineWidthAxes          = 2;
     m_LineColor              = 1;
+    m_GridLines              = false;
 
     MModeYearsPerRunSL       = m_TopLevelWidget->findChild<QSlider*     >("MModeYearsPerRunSL");
     MModeRunsPerForecastSL   = m_TopLevelWidget->findChild<QSlider*     >("MModeRunsPerForecastSL");
@@ -185,13 +186,15 @@ REMORA_UI::~REMORA_UI()
 }
 
 void
-REMORA_UI::setForPublishing(const int&     lineWidthData,
+REMORA_UI::setForPublishing(const bool&    gridLines,
+                            const int&     lineWidthData,
                             const int&     fontSizeLabel,
                             const int&     fontSizeNumber,
                             const QString& fontLabel,
                             const int&     lineWidthAxes,
                             const int&     lineColor)
 {
+    m_GridLines              = gridLines;
     m_LineWidthData          = lineWidthData;
     m_FontSizeLabel          = fontSizeLabel;
     m_FontSizeNumber         = fontSizeNumber;
@@ -386,7 +389,7 @@ qDebug() << "species,rem0: " << species << remTime0Value;
                 m_Font,
                 m_LineWidthAxes,
                 m_LineColor,
-                GridLines,
+                {m_GridLines,m_GridLines},
                 Theme,
                 LineColors[0],
                 "MultiSpecies",
@@ -649,7 +652,7 @@ REMORA_UI::drawMSYLines(
                 m_Font,
                 m_LineWidthAxes,
                 m_LineColor,
-                GridLines,
+                {m_GridLines,m_GridLines},
                 Theme,
                 LineColor,
                 "MultiSpecies",
@@ -674,8 +677,8 @@ REMORA_UI::drawPlot()
     }
 
     // Rescale axes of plot(s)
-    resetXAxis();
-    resetYAxis();
+//    resetXAxis();
+//    resetYAxis();
 
 }
 
@@ -806,7 +809,9 @@ REMORA_UI::drawSingleSpeciesChart()
     // NoUncertaintyRun = ForecastBiomass.size();
 
     // Get ChartLinesMonteCarlo Data
+    std::vector<double> ymax = {};
     for (int species=0; species<NumSpecies; ++species) {
+        ymax.push_back(0);
         for (int line=0; line<NumRunsPerForecast; ++line) {
             for (int time=0; time<=NumYearsPerRun; ++time) {
                 if (isFishingMortality) {
@@ -832,6 +837,8 @@ REMORA_UI::drawSingleSpeciesChart()
                         }
                     }
                 }
+                ymax[species] = (ChartLinesMonteCarlo(time,line) > ymax[species]) ?
+                                 ChartLinesMonteCarlo(time,line) : ymax[species];
             }
         }
 
@@ -914,7 +921,8 @@ REMORA_UI::drawSingleSpeciesChart()
         if (isFishingMortality) {
             YLabelMultiPlot = "F Mortality (C/Bc)";
         } else if (isAbsoluteBiomass) {
-            YLabelMultiPlot = "Biomass ("+getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() + "mt)";
+//          YLabelMultiPlot = "Biomass ("+getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() + "mt)";
+            YLabelMultiPlot = getYLBLPlotScaleFactor(getPlotScaleFactor()).toStdString() + "mt";
         } else if (isRelativeBiomass) {
             YLabelMultiPlot = "Rel Biomass";
         }
@@ -947,7 +955,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
-                        YMinVal,YMaxVal,
+                        YMinVal, ymax[i], // YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
                         ChartLinesMonteCarloMultiPlot[species],
                         RowLabelsForBars,
@@ -961,7 +969,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         m_Font,
                         m_LineWidthAxes,
                         m_LineColor,
-                        GridLines,
+                        {m_GridLines,m_GridLines},
                         Theme,
                         dimmedColor,
                         "MonteCarloSimulation",
@@ -977,7 +985,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
-                        YMinVal,YMaxVal,
+                        YMinVal, ymax[i], // YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
                         ChartLineMultiPlot[species],
                         RowLabelsForBars,
@@ -991,7 +999,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         m_Font,
                         m_LineWidthAxes,
                         m_LineColor,
-                        GridLines,
+                        {m_GridLines,m_GridLines},
                         Theme,
                         LineColors[0],
                         "No Uncertainty Variations",
@@ -1010,7 +1018,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     HoverLabels << "";
                 }
                 drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
-                             StartForecastYear,YMinVal,YMaxVal,
+                             StartForecastYear,YMinVal, ymax[i], //YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabels,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
@@ -1026,7 +1034,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     HoverLabelsPct << "";
                 }
                 drawMSYLines(chart,species,NumSpecies,NumYearsPerRun,
-                             StartForecastYear,YMinVal,YMaxVal,
+                             StartForecastYear,YMinVal, ymax[i], // YMaxVal,
                              Algorithm,Minimizer,ObjectiveCriterion,Scaling,
                              RowLabelsForBars,ColumnLabelsForLegend,HoverLabelsPct,
                              MainTitleMultiPlot,XLabel,YLabelMultiPlot,
@@ -1074,7 +1082,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     m_Font,
                     m_LineWidthAxes,
                     m_LineColor,
-                    GridLines,
+                    {m_GridLines,m_GridLines},
                     Theme,
                     dimmedColor,
                     "MonteCarloSimulation",
@@ -1104,7 +1112,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     m_Font,
                     m_LineWidthAxes,
                     m_LineColor,
-                    GridLines,
+                    {m_GridLines,m_GridLines},
                     Theme,
                     LineColors[0],
                 "No Uncertainty Variations",
@@ -1810,7 +1818,8 @@ REMORA_UI::saveUncertaintyParameters()
     std::string GrowthRate         = std::to_string(MModeRParamLE->text().toDouble()/100.0);
     std::string CarryingCapacity   = std::to_string(MModeKParamLE->text().toDouble()/100.0);
     std::string Harvest            = std::to_string(MModeHParamLE->text().toDouble()/100.0);
-
+    std::string GrowthRateShape    = "0";
+    std::string Catchability       = "0";
     // Clear previous entry in ForecastUncertainty table
     cmd = "DELETE FROM " +
            nmfConstantsMSSPM::TableForecastUncertainty +
@@ -1848,10 +1857,12 @@ REMORA_UI::saveUncertaintyParameters()
                     "','" + Scaling +
                     "',"  + InitBiomass +
                     ","   + GrowthRate +
+                    ","   + GrowthRateShape +   // 0 for now
                     ","   + CarryingCapacity +
+                    ","   + Catchability +      // 0 for now
                     ","   + Harvest;
             // N.B. Next line will need to be modified once more parameters are used in the ForecastUncertainty calculations
-            for (int i=0;i<ParameterNames.size()-4;++i) { //-4 because we are supplying data for: InitBiomass, GrowthRate, CarryingCapacity, and Harvest
+            for (int i=0;i<ParameterNames.size()-6;++i) { //-6 because we are supplying data for: InitBiomass, GrowthRate, GrowthRateShape, CarryingCapacity, Catchability, and Harvest
                 cmd += ", 0";
             }
             cmd += "),";

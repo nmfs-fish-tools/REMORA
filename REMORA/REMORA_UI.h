@@ -114,6 +114,7 @@ private:
     QFrame*       MModeFrame;
 
     bool                  m_ScenarioChanged;
+    bool                  m_GridLines;
     int                   m_IndexMaxYScaleFactor;
     int                   m_IndexScaleFactorChart1;
     int                   m_IndexScaleFactorChart2;
@@ -364,6 +365,7 @@ public:
     void setForecastNumYearsPerRun(int numYearsPerRun);
     /**
      * @brief Set chart formatting for publishing (i.e., line width, font, font size)
+     * @param gridlines: boolean value designating if gridlines are on or off
      * @param lineWidthData : width of data line(s)
      * @param fontSizeLabel : the point size of the label titles
      * @param fontSizeNumber : the point size of the axes' numeric scale values
@@ -371,7 +373,8 @@ public:
      * @param lineWidthAxes : width of the x and y axes
      * @param lineColor : value to be used for r,g,b values for axes line color
      */
-    void setForPublishing(const int&     lineWidthData,
+    void setForPublishing(const bool&    gridLines,
+                          const int&     lineWidthData,
                           const int&     fontSizeLabel,
                           const int&     fontSizeNumeric,
                           const QString& fontLabel,
