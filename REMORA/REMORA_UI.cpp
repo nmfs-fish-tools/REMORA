@@ -374,6 +374,7 @@ qDebug() << "species,rem0: " << species << remTime0Value;
                 nmfConstantsMSSPM::ShowFirstPoint,
                 nmfConstants::ShowLegend,
                 StartForecastYear,
+                nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                 nmfConstantsMSSPM::LabelXAxisAsInts,
                 YMinVal,YMaxVal,
                 nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -637,6 +638,7 @@ REMORA_UI::drawMSYLines(
                 nmfConstantsMSSPM::ShowFirstPoint,
                 ShowLegend,
                 StartForecastYear,
+                nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                 nmfConstantsMSSPM::LabelXAxisAsInts,
                 YMinVal,YMaxVal,
                 nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -954,6 +956,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstantsMSSPM::ShowFirstPoint,
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
+                        nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
                         YMinVal, ymax[i], // YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -984,6 +987,7 @@ REMORA_UI::drawSingleSpeciesChart()
                         nmfConstantsMSSPM::ShowFirstPoint,
                         nmfConstants::DontShowLegend,
                         StartForecastYear,
+                        nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                         nmfConstantsMSSPM::LabelXAxisAsInts,
                         YMinVal, ymax[i], // YMaxVal,
                         nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -1067,6 +1071,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     nmfConstantsMSSPM::ShowFirstPoint,
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
+                    nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                     nmfConstantsMSSPM::LabelXAxisAsInts,
                     YMinVal,YMaxVal,
                     nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -1097,6 +1102,7 @@ REMORA_UI::drawSingleSpeciesChart()
                     nmfConstantsMSSPM::ShowFirstPoint,
                     nmfConstants::DontShowLegend,
                     StartForecastYear,
+                    nmfConstantsMSSPM::DontApplyNiceNumbersXAxis,
                     nmfConstantsMSSPM::LabelXAxisAsInts,
                     YMinVal,YMaxVal,
                     nmfConstantsMSSPM::LeaveGapsWhereNegative,
@@ -1115,8 +1121,8 @@ REMORA_UI::drawSingleSpeciesChart()
                     {m_GridLines,m_GridLines},
                     Theme,
                     LineColors[0],
-                "No Uncertainty Variations",
-                1.0);
+                    "No Uncertainty Variations",
+                    1.0);
 
         // Remove any existing MSY series
         removeMSYLines(m_ChartWidget,{"MSY = r/2","MSY = K/2"});
