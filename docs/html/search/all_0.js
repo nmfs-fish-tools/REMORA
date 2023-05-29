@@ -5,7 +5,7 @@ var searchData=
   ['callback_5fforecastplottypecmb_2',['callback_ForecastPlotTypeCMB',['../class_r_e_m_o_r_a___u_i.html#a5330752e3a214edbe3c1e0c39aaffaac',1,'REMORA_UI']]],
   ['callback_5fkeypressed_3',['callback_KeyPressed',['../class_r_e_m_o_r_a___u_i.html#a8e04da2d681cf5733c6ebaa3cd803000',1,'REMORA_UI']]],
   ['callback_5floadpb_4',['callback_LoadPB',['../class_r_e_m_o_r_a___u_i.html#a9f2f4b5489146796967aa7a8582d8900',1,'REMORA_UI']]],
-  ['callback_5fmaxscalefactorpb_5',['callback_MaxScaleFactorPB',['../class_r_e_m_o_r_a___u_i.html#aea4377855f9ff2b97b54a4f7168eea8c',1,'REMORA_UI']]],
+  ['callback_5fmaxscalefactorsb_5',['callback_MaxScaleFactorSB',['../class_r_e_m_o_r_a___u_i.html#ac7201a24a8973ce56a96689112e3897a',1,'REMORA_UI']]],
   ['callback_5fmousemoved_6',['callback_MouseMoved',['../class_r_e_m_o_r_a___u_i.html#aa1947f103c1df1a43738669ef5c99038',1,'REMORA_UI']]],
   ['callback_5fmousereleased_7',['callback_MouseReleased',['../class_r_e_m_o_r_a___u_i.html#acbddf6f3d8a6416c7a286dce588805b6',1,'REMORA_UI']]],
   ['callback_5fmsycb_8',['callback_MSYCB',['../class_r_e_m_o_r_a___u_i.html#aa9822976af3c3c53593d9403ea52dd86',1,'REMORA_UI']]],
